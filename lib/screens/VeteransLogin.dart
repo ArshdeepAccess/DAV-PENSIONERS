@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import '../Models/login_model.dart';
 import 'constant.dart';
 import 'hmscreen1.dart';
+import 'package:intl/intl.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -17,6 +18,10 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+  // late SharedPreferences prefs;
+  // late String _lastLogin;
+
   bool _secureText = true;
   bool isLoading = false;
 
@@ -40,8 +45,23 @@ class _LoginState extends State<Login> {
   void initState() {
     super.initState();
     getData();
-  }
 
+    // _initSharedPreferences();
+  }
+  // Future<void> _initSharedPreferences() async {
+  //   prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     _lastLogin = prefs.getString('last_login') ?? 'Never';
+  //   });
+  // }
+  // Future<void> saveLogin() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   DateTime now = DateTime.now();
+  //   // String formattedDateTime = DateFormat("MM/dd/yyyy HH:mm").format(now);
+  //   String formattedDateTime = "${now.month}/${now.day}/${now.year} ${now
+  //       .hour}:${now.minute}";
+  //   await prefs.setString('lastLoginTime', formattedDateTime);
+  // }
   Future<void> getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -52,7 +72,6 @@ class _LoginState extends State<Login> {
     // print(pk);
 
     print(Name);
-
     if (serviceNumber != "") {
       serviceNumberController.text = serviceNumber;
     }
@@ -61,6 +80,18 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> doLogin() async {
+    DateTime now = DateTime.now();
+
+// save the date and time to shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lastVisit', now.toString());
+    // DateTime now = DateTime.now();
+    // String currentTime = "${now.month}/${now.day}/${now.year} ${now.hour}:${now.minute}";
+    // setState(() {
+    //   _lastLogin = currentTime;
+    // });
+    // await prefs.setString('last_login', currentTime);
+
     isLoading = true;
     setState(() {});
 
@@ -108,7 +139,6 @@ class _LoginState extends State<Login> {
         (_) => false,
       );
     }
-
     isLoading = false;
     setState(() {
       pkController.text = data[0].pk;
@@ -443,7 +473,6 @@ class _LoginState extends State<Login> {
                   showCursor: true,
                   // onCompleted: (pin) => print(pin),
                 ),
-
                 // child: TextFormField(
                 //   keyboardType: TextInputType.number,
                 //   controller: passwordController,
@@ -534,8 +563,18 @@ class _LoginState extends State<Login> {
                 const Center(
                   child: CircularProgressIndicator(),
                 ),
+
               SizedBox(
-                height: size.height * 0.03,
+                height: size.height * 0.01,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Text('Last Login: $_lastLogin',style: TextStyle(),),
+                ],
+              ),
+              SizedBox(
+                height: size.height * 0.01,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

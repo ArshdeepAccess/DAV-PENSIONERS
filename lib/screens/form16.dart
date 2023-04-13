@@ -25,37 +25,37 @@ class _Form16State extends State<Form16> {
   //
   //
   // String dropdownvalue = "";
-
-  List<String> year = <String>['2015-16', '2016-17','2017-18','2018-19','2019-20','2020-21','2021-22','2022-23','2023-24',
-  ];
+  //
+  // List<String> year = <String>['2015-16', '2016-17','2017-18','2018-19','2019-20','2020-21','2021-22','2022-23','2023-24',
+  // ];
 //
 //   // List<String> year = [];
-  String dropdownvalue = '2015-16';
+//   String dropdownvalue = '2015-16';
   @override
   void initState() {
     super.initState();
-    fillArray();
+    // fillArray();
     checkInternetConnection();
 
   }
 
-  void fillArray(){
-    // DateTime now = new DateTime.now();
-    // int intYear = now.year;
-    //
-    // for(int i = 2015; i <= (intYear+1); i++ ){
-    //   year.add((i.toString()+"-"+(i+1).toString()));
-    // }
-    dropdownvalue = year[0];
-    getData(year[0]);
-  }
+  // void fillArray(){
+  //   // DateTime now = new DateTime.now();
+  //   // int intYear = now.year;
+  //   //
+  //   // for(int i = 2015; i <= (intYear+1); i++ ){
+  //   //   year.add((i.toString()+"-"+(i+1).toString()));
+  //   // }
+  //   dropdownvalue = year[0];
+  //   getData(year[0]);
+  // }
 
-  Future<void> getData(year) async {
+  Future<void> getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var serviceNumber = prefs.getString('ServiceNumber') ?? "";
     var cat = prefs.getString('Category') ?? "";
-    print("$baseURL/form16download/form16download/$serviceNumber/$cat/$year");
-    final response = await http.get(Uri.parse("$baseURL/form16download/form16download/$serviceNumber/$cat/$year"));
+    print("$baseURL/form16download/form16download/$serviceNumber/$cat");
+    final response = await http.get(Uri.parse("$baseURL/form16download/form16download/$serviceNumber/$cat"));
     if (response.statusCode == 200) {
       var responseBody = jsonDecode(response.body);
       data = (responseBody["items"] as List).map((data) => Form16Model.fromJson(data)).toList();
@@ -70,7 +70,7 @@ class _Form16State extends State<Form16> {
     bool internetConnection = await InternetConnectionChecker().hasConnection;
     if(internetConnection == true)
     {
-      getData(year);
+      getData();
     }
     else
     {
@@ -180,58 +180,58 @@ class _Form16State extends State<Form16> {
               ),
             ),
           ),
-
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width / 40,
-              vertical: MediaQuery.of(context).size.width / 120,
-            ),
-
-            // const EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 2.0),
-            child: TextFormField(
-
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                hintText: "Select",
-                filled: true,
-                fillColor: Colors.white,
-                suffixIcon: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    onChanged: (newValue) {
-                      setState(() {
-                        dropdownvalue = newValue!;
-                        getData(newValue);
-                      });
-                    },
-
-                    value: dropdownvalue,
-                    dropdownColor: const Color(0xFFf2fcff),
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.normal,
-                    ),
-
-                    isExpanded: true,
-                    borderRadius: BorderRadius.circular(30),
-                    items: year.map<DropdownMenuItem<String>>(
-                          (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(value),
-                          ),
-                        );
-                      },
-
-                    ).toList(),
-
-                  ),
-                ),
-              ),
-            ),
-          ),
+          //
+          // Padding(
+          //   padding: EdgeInsets.symmetric(
+          //     horizontal: MediaQuery.of(context).size.width / 40,
+          //     vertical: MediaQuery.of(context).size.width / 120,
+          //   ),
+          //
+          //   // const EdgeInsets.fromLTRB(10.0, 2.0, 10.0, 2.0),
+          //   child: TextFormField(
+          //
+          //     decoration: InputDecoration(
+          //       border: const OutlineInputBorder(),
+          //       hintText: "Select",
+          //       filled: true,
+          //       fillColor: Colors.white,
+          //       suffixIcon: DropdownButtonHideUnderline(
+          //         child: DropdownButton<String>(
+          //           onChanged: (newValue) {
+          //             setState(() {
+          //               dropdownvalue = newValue!;
+          //               getData(newValue);
+          //             });
+          //           },
+          //
+          //           value: dropdownvalue,
+          //           dropdownColor: const Color(0xFFf2fcff),
+          //           style: const TextStyle(
+          //             color: Colors.black,
+          //             fontSize: 18,
+          //             fontWeight: FontWeight.normal,
+          //           ),
+          //
+          //           isExpanded: true,
+          //           borderRadius: BorderRadius.circular(30),
+          //           items: year.map<DropdownMenuItem<String>>(
+          //                 (String value) {
+          //               return DropdownMenuItem<String>(
+          //                 value: value,
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.all(10.0),
+          //                   child: Text(value),
+          //                 ),
+          //               );
+          //             },
+          //
+          //           ).toList(),
+          //
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
 
           Padding(
             padding: EdgeInsets.only(

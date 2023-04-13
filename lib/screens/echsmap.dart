@@ -190,7 +190,7 @@ print(currentLon = position.longitude);
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton2(
                           hint: Text(
-                            'Select Item',
+                            'Select State',
                             style: TextStyle(
                               fontSize: 14,
                               color: Theme.of(context).hintColor,

@@ -444,7 +444,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
     } else {
       cat = "A";
     }
-
+print("$baseURL/FORGETPINNEW//FORGETPINNEW/${serviceNumberController.text}/${_date.text.toString()}/$cat");
     final response = await http.get(Uri.parse("$baseURL/FORGETPINNEW//FORGETPINNEW/${serviceNumberController.text}/${_date.text.toString()}/$cat"));
     var responseBody = jsonDecode(response.body);
     if (responseBody["items"][0]["result"] == "NO") {

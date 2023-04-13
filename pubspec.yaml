@@ -75,6 +75,7 @@ dependencies:
   dio:
   fluttertoast:
   get: ^4.6.5
+  image_picker: ^0.8.7+1
 
 dev_dependencies:
   flutter_test:

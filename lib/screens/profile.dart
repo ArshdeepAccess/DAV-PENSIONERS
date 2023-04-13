@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:dav2/Models/pfofilenameModel.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'constant.dart';
+import 'hmscreen1.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -14,11 +14,11 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-
   late bool private_status;
-
   List<ProfilenameModel> data = [];
+  bool _isEditable = false;
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   var nameController = TextEditingController();
   var panController = TextEditingController();
   var aadharController = TextEditingController();
@@ -54,6 +54,7 @@ class _ProfileState extends State<Profile> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var serviceNumber = prefs.getString('ServiceNumber') ?? "";
     var cat = prefs.getString('Category') ?? "";
+
     final response = await http.get(Uri.parse(
         "${baseURL}/PROFILEDETAIL/PROFILEDETAIL/${serviceNumber}/${cat}"));
     if (response.statusCode == 200) {
@@ -66,13 +67,11 @@ class _ProfileState extends State<Profile> {
           .toList();
       print(data[0].av_name);
       prefs.setString("name", data[0].av_name);
-
-      if(data[0].private_status == "true") {
+      if (data[0].private_status == "true") {
         private_status = true;
-      }else{
+      } else {
         private_status = false;
       }
-
       setState(() {
         nameController.text = data[0].av_name;
         serviceNumberController.text = data[0].user_service_no;
@@ -96,23 +95,45 @@ class _ProfileState extends State<Profile> {
     var cat = prefs.getString('Category') ?? "";
 
     print(
-        "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}");
+        "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}"
+        "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}");
 
     final response = await http.put(
         Uri.parse(
-            "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}"),
+            "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}"
+            "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}"),
         body: {
           "SERVICE_NO": serviceNumberController,
           "CATEGORY": cat,
           "FLAG_YN": value.toString(),
+          "EMAIL": emailController.text.toString(),
+          "MOBILE": mobileController.text.toString(),
         });
     print(response.body);
     if (response.statusCode == 200) {
       print("ok");
     }
-    // else {
-    //   _showMyDialog(response.body);
-    // }
+    _showMyDialog1("Record Updated Successfully");
+  }
+
+  Future<void> _showMyDialog1(message) async {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        // title: const Text('Error'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            // onPressed: () => Navigator.pop(context, 'OK'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            ),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   bool isLoading = true;
@@ -144,512 +165,378 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-        backgroundColor: Color(0xFFf2fcff),
-        appBar: AppBar(
-          backgroundColor: Color(0xFFd3eaf2),
-          title: Row(
-            children: [
-              Image(
-                image: AssetImage(
-                  "assets/images/dav-new-logo.png",
-                ),
-                fit: BoxFit.contain,
-                height: 60,
+      backgroundColor: Color(0xFFf2fcff),
+      appBar: AppBar(
+        backgroundColor: Color(0xFFd3eaf2),
+        title: Row(
+          children: [
+            Image(
+              image: AssetImage(
+                "assets/images/dav-new-logo.png",
               ),
-              Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('VAYU-SAMPARC'))
-            ],
-          ),
-          // backgroundColor: Color(0xFF394361),
-          // title: Text(
-          //   "Profile",
-          //   style: TextStyle(fontSize: 15),
-          // ),
+              fit: BoxFit.contain,
+              height: 60,
+            ),
+            Container(
+                padding: const EdgeInsets.all(8.0), child: Text('VAYU-SAMPARC'))
+          ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width / 20,
-                    vertical: MediaQuery.of(context).size.width / 20,
-                  ),
-                  child: Text(
-                    "Profile",
-                    style: TextStyle(
-                      color: Color(0xFF394361),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+      ),
+      body: Form(
+        key: formKey,
+        child: ListView.separated(
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width / 20),
+            shrinkWrap: true,
+            primary: false,
+            itemCount: data.length,
+            separatorBuilder: (context, position) => const SizedBox(
+                  height: 10,
+                ),
+            itemBuilder: (context, position) {
+              return Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {},
+                    child: CircleAvatar(
+                      backgroundImage: AssetImage(
+                        "assets/images/profile.jpeg",
+                      ),
+                      radius: 80,
                     ),
                   ),
-                ),
-              ),
-              ListView.separated(
-                  padding:
-                      EdgeInsets.all(MediaQuery.of(context).size.width / 20),
-                  shrinkWrap: true,
-                  primary: false,
-                  itemCount: data.length,
-                  separatorBuilder: (context, position) => const SizedBox(
-                        height: 10,
+                  SizedBox(
+                    // height: 15,
+                    height: size.height * 0.02,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusColor: Colors.transparent,
+                        labelText: 'Name',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                       ),
-                  itemBuilder: (context, position) {
-                    return Column(
+                    ),
+                  ),
+                  SizedBox(
+                    // height: 15,
+                    height: size.height * 0.01,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: suffixController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusColor: Colors.transparent,
+                        labelText: 'Check Suffix',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    // height: 15,
+                    height: size.height * 0.01,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: panController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusColor: Colors.transparent,
+                        labelText: 'Pan',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: size.height * 0.01,
+                    // height: 15,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: aadharController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusColor: Colors.transparent,
+                        labelText: 'Aadhar',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                    // height: 15,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: dobController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusColor: Colors.transparent,
+                        labelText: 'DOB',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                    // height: 15,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: docController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusColor: Colors.transparent,
+                        labelText: 'DOC',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                    // height: 15,
+                  ),
+                  SizedBox(
+                    height: size.height * 0.05,
+                    child: TextFormField(
+                      readOnly: true,
+                      controller: dodController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        focusColor: Colors.transparent,
+                        labelText: 'DOD',
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      ),
+                    ),
+                  ),
+                  // SizedBox(
+                  //   // height: 40,
+                  //   height: size.height * 0.05,
+                  //   child: TextFormField(
+                  //     readOnly: true,
+                  //     controller: dodController,
+                  //     decoration: const InputDecoration(
+                  //       border: OutlineInputBorder(),
+                  //       labelText: 'DOD',
+                  //       // filled: true,
+                  //       // fillColor: Colors.white,
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Text(
+                        "Allow to hide your mobile no. & email from your coursemates",
+                        style: TextStyle(
+                            color: Color(0xFF0b0c5b),
+                            fontWeight: FontWeight.bold),
+                      )),
+                      Column(
+                        children: [
+                          Switch(
+                            value: private_status,
+                            activeColor: Colors.blue,
+                            inactiveTrackColor: Colors.grey.shade400,
+                            onChanged: (value) {
+                              print(doFlag(value));
+                              doFlag(value);
+                              setState(() {
+                                private_status = value;
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                    // height: 15,
+                  ),
+                  SizedBox(
+                    // height: 40,
+                    height: size.height * 0.06,
+                    child: Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage: AssetImage(
-                            "assets/images/profile.jpeg",
+                        Expanded(
+                          flex: 8,
+                          // child: TextFormField(
+                          //   readOnly: false,
+                          //   controller: emailController,
+                          //   validator: (value) {
+                          //     if (value == null || value.isEmpty) {
+                          //       return 'Please enter your email';
+                          //     } else if (!RegExp(
+                          //             r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                          //         .hasMatch(value)) {
+                          //       return 'Please enter a valid email';
+                          //     }
+                          //     return null;
+                          //   },
+                          //   enabled: _isEditable,
+                          //   decoration: const InputDecoration(
+                          //     border: OutlineInputBorder(),
+                          //     labelText: 'Email Id',
+                          //   ),
+                          // ),
+                          child: TextFormField(
+                            readOnly: false,
+                            controller: emailController,
+    validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        } else if (!RegExp(
+                r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+            .hasMatch(value)) {
+          return 'Please enter a valid email';
+        }
+        return null;
+      },
+      enabled: _isEditable,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              focusColor: Colors.transparent,
+                              labelText: 'Email Id',
+                              labelStyle: TextStyle(
+                                color: Colors.grey,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                            ),
                           ),
-                          radius: 80,
                         ),
-
-                        SizedBox(
-                          height: size.height * 0.05,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.contact_page_outlined,
-                                  color: Color(0xFF0b0c5b),
-                                  // color: Colors.grey,
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "Name:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].av_name),
-                              ],
-                            ),
-                          ],
-                        ),
-                        // Padding(
-                        //   padding: const EdgeInsets.only(left: 18.0),
-                        //   child: Row(
-                        //     children: [
-                        //   Text(data[position].av_name),
-                        //     ],
-                        //   ),
-                        // ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.contact_page_outlined,
-                                  color: Color(0xFF0b0c5b),
-
-                                  // color: Colors.grey,
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "Check Suffix:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_chk_suffix),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.call_to_action_outlined,
-                                  color: Color(0xFF0b0c5b),
-
-                                  // color: Colors.grey,
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "PAN No:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_pan_no),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        // Padding(
-                        //   padding: const EdgeInsets.only(left: 20.0),
-                        //   child: Row(
-                        //     children: [
-                        //       Text(data[position].user_pan_no),
-                        //     ],
-                        //   ),
-                        // ),
-
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.call_to_action_outlined,
-                                  color: Color(0xFF0b0c5b),
-
-                                  // color: Colors.grey,
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "Aadhar No:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_aadhar_no.toString()),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.calendar_month,
-                                  color: Color(0xFF0b0c5b),
-
-                                  // color: Colors.grey,
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "DOB:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_dob.toString()),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.calendar_month,
-                                  color: Color(0xFF0b0c5b),
-                                  // color: Colors.grey,
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "DOC:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_doc.toString()),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.calendar_month,
-                                  color: Color(0xFF0b0c5b),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "DOD:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_dod.toString()),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        // Row(
-                        //   children: [
-                        //     Expanded(
-                        //         child: Text(
-                        //       "Allow to hide your mobile no. & email from your coursemates",
-                        //       style: TextStyle(
-                        //           color: Color(0xFF0b0c5b),
-                        //           fontWeight: FontWeight.bold),
-                        //     )),
-                        //     Column(
-                        //       children: [
-                        //         Switch(
-                        //           value: switchStatus,
-                        //           activeColor: Colors.blue,
-                        //           inactiveTrackColor: Colors.grey.shade400,
-                        //           onChanged: (value) {
-                        //             print(doFlag(value));
-                        //             doFlag(value);
-                        //             setState(() {
-                        //               switchStatus = value;
-                        //             });
-                        //           },
-                        //         )
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
-                        Row(
-                          children: [
-                            Expanded(
-                                child: Text(
-                              "Allow to hide your mobile no. & email from your coursemates",
-                              style: TextStyle(
-                                  color: Color(0xFF0b0c5b),
-                                  fontWeight: FontWeight.bold),
-                            )),
-                            Column(
-                              children: [
-                                Switch(
-                                  value: private_status,
-                                  activeColor: Colors.blue,
-                                  inactiveTrackColor: Colors.grey.shade400,
-                                  onChanged: (value) {
-                                    print(doFlag(value));
-                                    doFlag(value);
-                                    setState(() {
-                                      private_status = value;
-                                    });
-                                  },
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.email,
-                                  color: Color(0xFF0b0c5b),
-
-                                  // color: Colors.grey,
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "Email:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_email_id.toString()),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: size.height * 0.02,
-                        ),
-
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Icon(
-                                  Icons.call,
-                                  color: Color(0xFF0b0c5b),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  "Mobile No:",
-                                  style: TextStyle(
-                                      color: Color(0xFF0b0c5b),
-                                      fontWeight: FontWeight.w500
-                                      // color: Colors.grey,
-                                      ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: size.width * 0.02,
-                            ),
-                            Column(
-                              children: [
-                                Text(data[position].user_mob_no.toString()),
-                              ],
-                            ),
-                          ],
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            setState(() {
+                              emailController.text = "";
+                              _isEditable = true;
+                            });
+                          },
                         ),
                       ],
-                    );
-                  }),
-            ],
-          ),
-        ));
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                    // height: 15,
+                  ),
+                  SizedBox(
+                    // height: 40,
+                    height: size.height * 0.06,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 8,
+                          child: TextFormField(
+                            readOnly: false,
+                            controller: mobileController,
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your phone number';
+                              }
+                              final phoneRegExp = RegExp(r'^\d{10}$');
+                              if (!phoneRegExp.hasMatch(value)) {
+                                return 'Please enter a valid 10-digit phone number';
+                              }
+                              return null;
+                            },
+                            enabled: _isEditable,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              focusColor: Colors.transparent,
+                              labelText: 'Mobile Number',
+                              labelStyle: TextStyle(
+                                color: Colors.grey,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            setState(() {
+                              mobileController.text = "";
+                              _isEditable = true;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        doFlag(isLoading);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color(0xFF394361),
+                    ),
+                    child: const Text('Submit'),
+                  ),
+                ],
+              );
+            }),
+      ),
+    );
   }
 }

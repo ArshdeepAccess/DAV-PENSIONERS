@@ -2,15 +2,9 @@ import 'dart:async';
 import 'package:dav2/screens/VeteransLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:mobile_number/mobile_number.dart';
-
-import 'mobile number.dart';
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
-
   // final String title;
-
   @override
   State<SplashScreen> createState() => SplashScreenState();
 }
@@ -18,7 +12,6 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   //
   // static const String KEYREGISTER= "Register";
-
   // int _counter = 0;
   @override
   // Future<void> main() async {
@@ -79,7 +72,6 @@ class SplashScreenState extends State<SplashScreen> {
     //
     // });
   }
-
   // void showNotification(){
   //   setState(() {
   //     _counter++;

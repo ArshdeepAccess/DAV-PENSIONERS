@@ -61,10 +61,10 @@ class _ChangeMpinState extends State<ChangeMpin> {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomeScreen()),
+        context, MaterialPageRoute(builder: (context) => HomeScreen()),   ),
                 // Navigator.pop(context, 'OK'),
             // child: const Text('OK'),
-          ), child: const Text('OK'),
+        child: const Text('OK'),
           ) ],
       ),
     );
