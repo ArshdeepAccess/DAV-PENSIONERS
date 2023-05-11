@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'dart:ui';
+import 'package:dav2/screens/sparsh.dart';
+import 'package:dav2/screens/welfaretab.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dav2/screens/Contacts.dart';
@@ -16,14 +19,17 @@ import 'package:dav2/screens/otherlinks.dart';
 import 'package:dav2/screens/por.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../Models/pfofilenameModel.dart';
 import 'Iafba.dart';
 import 'Ig6.dart';
 import 'Resettlement.dart';
 import 'Servicehome.dart';
 import 'Updateshome.dart';
+import 'constant.dart';
 import 'faqhome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -32,8 +38,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<ProfilenameModel> data = [];
   late String _lastVisitTimeText = '';
-
   // late String _lastVisitTimeText;
   final DateFormat _dateFormat = DateFormat.yMd().add_jm();
   @override
@@ -42,9 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String _text = "Press the button and start speaking";
 
   @override
-
   void initState() {
     super.initState();
+    Future.value().whenComplete(() => welcomePopUp(context));
+    getData();
     getPermission();
     _lastVisitTimeText = '';
     _getLastVisitTime();
@@ -66,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     prefs.setString('lastVisitTime', DateTime.now().toString());
   }
+
   // Future<String> getLastLoginTime() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   String lastLoginTime = prefs.getString('lastLoginTime') ?? 'N/A';
@@ -83,8 +91,50 @@ class _HomeScreenState extends State<HomeScreen> {
     // Map<Permission, PermissionStatus> statuses = await [Permission.location].request();
   }
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  var nameController = TextEditingController();
+  var categoryController = TextEditingController();
+  var serviceNumberController = TextEditingController();
+
+  List<String> items = <String>['Officer', 'Airmen/NCs(E)'];
+  String dropDownValue = 'Officer';
+
+  var serviceNumber = "";
+  var category = "";
+  var name = "";
+
+
+  Future<void> getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var serviceNumber = prefs.getString('ServiceNumber') ?? "";
+    var cat = prefs.getString('Category') ?? "";
+
+    final response = await http.get(Uri.parse(
+        "${baseURL}/PROFILEDETAIL/PROFILEDETAIL/${serviceNumber}/${cat}"));
+    if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('Name', nameController.text);
+      var responseBody = jsonDecode(response.body);
+      print(responseBody);
+      data = (responseBody["items"] as List)
+          .map((data) => ProfilenameModel.fromJson(data))
+          .toList();
+      print(data[0].av_name);
+      prefs.setString("name", data[0].av_name);
+      setState(() {
+        nameController.text = data[0].av_name;
+        serviceNumberController.text = data[0].user_service_no;
+      });
+    } else {
+      throw Exception('Failed to load album');
+    }
+  }
+
+
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF394361),
@@ -100,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
           Image(
               image: AssetImage(
-            "assets/images/newlogo.png",
-          )),
+                "assets/images/newlogo.png",
+              )),
         ],
       ),
       drawer: Maindrawer(),
@@ -115,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.grey.withOpacity(0.1),
                 ),
               ),
-              height: size.height * 0.28,
+              height: size.height * 0.25,
               width: size.width * 1.5,
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -129,8 +179,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Card(
               color: Color(0xFFf2fcff),
               margin: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.width / 40,
-                horizontal: MediaQuery.of(context).size.width / 20,
+                vertical: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 20,
+                horizontal: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 20,
               ),
               child: Column(
                 children: [
@@ -138,7 +194,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                            left: MediaQuery.of(context).size.width / 30),
+                            left: MediaQuery
+                                .of(context)
+                                .size
+                                .width / 30),
                         child: Text(
                           "Services",
                           style: TextStyle(
@@ -157,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -175,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                          AssetImage("assets/images/eppo.png"),
+                                      AssetImage("assets/images/eppo.png"),
                                       // AssetImage("assets/images/eppo-1.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -196,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -214,8 +273,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                          // "assets/images/form16-1.png"),
-                                       "assets/images/form16.png"),
+                                        // "assets/images/form16-1.png"),
+                                          "assets/images/form16.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -235,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -253,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                          // AssetImage("assets/images/por-1.png"),
+                                      // AssetImage("assets/images/por-1.png"),
                                       AssetImage("assets/images/por.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -274,7 +333,46 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Resettlement1()),
+                            );
+                          },
+                          child: Card(
+                            color: Color(0xFFd3eaf2),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Image(
+                                      image: AssetImage(
+                                        // "assets/images/iafpc.png"),
+                                          "assets/images/resettlement.png"),
+                                      height: size.height * 0.02,
+                                      width: size.width * 0.15),
+                                ),
+                                Container(
+                                    height: 20,
+                                    child: Text(
+                                      "IAFPC",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 7,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width * 0.04,
                       ),
                     ],
                   ),
@@ -286,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -324,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -362,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -381,7 +479,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                          // AssetImage("assets/images/echs-1.png"),
+                                      // AssetImage("assets/images/echs-1.png"),
                                       AssetImage("assets/images/echs.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -401,18 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: size.width * 0.08,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -431,8 +518,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                          // "assets/images/coursemates1.png"),
-                                         "assets/images/coursemates.png"),
+                                        // "assets/images/coursemates1.png"),
+                                          "assets/images/coursemates.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -450,9 +537,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -460,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Resettlement1()),
+                                  builder: (context) => WelfareTab()),
                             );
                           },
                           child: Card(
@@ -471,15 +568,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                          // "assets/images/iafpc.png"),
-                                             "assets/images/resettlement.png"),
+                                        // "assets/images/coursemates1.png"),
+                                          "assets/images/welfare.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
                                 Container(
                                     height: 20,
                                     child: Text(
-                                      "IAFPC",
+                                      "Welfare",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 7,
@@ -490,8 +587,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+                      // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: Column(
@@ -499,7 +597,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [],
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width * 0.04,
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [],
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width * 0.04,
                       ),
                     ],
                   ),
@@ -512,8 +626,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Card(
               color: Color(0xFFf2fcff),
               margin: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.width / 150,
-                horizontal: MediaQuery.of(context).size.width / 20,
+                vertical: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 150,
+                horizontal: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 20,
               ),
               child: Column(
                 children: [
@@ -521,7 +641,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                            left: MediaQuery.of(context).size.width / 30),
+                            left: MediaQuery
+                                .of(context)
+                                .size
+                                .width / 30),
                         child: Text(
                           "Information",
                           style: TextStyle(
@@ -540,7 +663,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -559,8 +682,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                          // "assets/images/update1.png"),
-                                      "assets/images/update.png"),
+                                        // "assets/images/update1.png"),
+                                          "assets/images/update.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -580,7 +703,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -599,9 +722,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                          // "assets/images/notice.png"),
-                                             "assets/images/noticeboard.png"),
-    height: size.height * 0.02,
+                                        // "assets/images/notice.png"),
+                                          "assets/images/noticeboard.png"),
+                                      height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
                                 Container(
@@ -619,7 +742,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -638,7 +761,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                          AssetImage("assets/images/video.png"),
+                                      AssetImage("assets/images/video.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -656,9 +779,48 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Faq1()),
+                            );
+                          },
+                          child: Card(
+                            color: Color(0xFFd3eaf2),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Image(
+                                      image:
+                                      AssetImage("assets/images/faq.png"),
+                                      height: size.height * 0.02,
+                                      width: size.width * 0.15),
+                                ),
+                                Container(
+                                    height: 20,
+                                    child: Text(
+                                      "FAQs",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 7,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // SizedBox(width: 30,),
+                      SizedBox(
+                        width: size.width * 0.04,
                       ),
                     ],
                   ),
@@ -669,7 +831,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -707,7 +869,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -746,7 +908,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -785,25 +947,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => Faq1()),
+                              MaterialPageRoute(builder: (context) => Sparsh()),
                             );
                           },
                           child: Card(
@@ -814,14 +965,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                          AssetImage("assets/images/faq.png"),
+                                      AssetImage("assets/images/iaf-afg.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
                                 Container(
                                     height: 20,
                                     child: Text(
-                                      "FAQs",
+                                      "SPARSH",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 7,
@@ -834,7 +985,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+
+                      // SizedBox(width: 30,),
+                      SizedBox(
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -873,7 +1037,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       // SizedBox(width: 30,),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
                       ),
                       Expanded(
                         child: GestureDetector(
@@ -910,10 +1074,91 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: size.width * 0.08,
+                        width: size.width * 0.04,
+                      ),
+                      SizedBox(
+                        width: size.width * 0.04,
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [],
+                        ),
+                      ),
+                      SizedBox(
+                        width: size.width * 0.04,
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [],
+                        ),
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     SizedBox(
+                  //       width: size.width * 0.08,
+                  //     ),
+                  //     Expanded(
+                  //       child: GestureDetector(
+                  //         onTap: () {
+                  //           Navigator.push(
+                  //             context,
+                  //             MaterialPageRoute(builder: (context) => Sparsh()),
+                  //           );
+                  //         },
+                  //         child: Card(
+                  //           color: Color(0xFFd3eaf2),
+                  //           child: Column(
+                  //             children: [
+                  //               Padding(
+                  //                 padding: const EdgeInsets.only(top: 8.0),
+                  //                 child: Image(
+                  //                     image:
+                  //                     AssetImage("assets/images/iaf-afg.png"),
+                  //                     height: size.height * 0.02,
+                  //                     width: size.width * 0.15),
+                  //               ),
+                  //               Container(
+                  //                   height: 20,
+                  //                   child: Text(
+                  //                     "SPARSH",
+                  //                     textAlign: TextAlign.center,
+                  //                     style: TextStyle(
+                  //                         fontSize: 7,
+                  //                         fontWeight: FontWeight.bold),
+                  //                   )),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     // SizedBox(width: 30,),
+                  //     SizedBox(
+                  //       width: size.width * 0.08,
+                  //     ),
+                  //     Expanded(
+                  //       child: Column(
+                  //         children: [],
+                  //       ),
+                  //     ),
+                  //     SizedBox(
+                  //       width: size.width * 0.08,
+                  //     ),
+                  //     Expanded(
+                  //       child: Column(
+                  //         children: [],
+                  //       ),
+                  //     ),
+                  //     SizedBox(
+                  //       width: size.width * 0.08,
+                  //     ),
+                  //   ],
+                  // ),
                   SizedBox(
                     height: size.height * 0.01,
                   ),
@@ -947,73 +1192,74 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Last visit: $_lastVisitTimeText',),
                 // Text('Last Login: ${_getLastLoginTime()}'),
 
-              // Expanded(
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(left: 2.0),
-              //     child: Column(
-              //       children: [
-              //       FutureBuilder<String>(
-              //         future: getLastLoginTime(),
-              //         builder: (context, snapshot) {
-              //           if (snapshot.connectionState == ConnectionState.waiting) {
-              //             return CircularProgressIndicator();
-              //           } else if (snapshot.hasError) {
-              //             return Text('Last Visit: Never');
-              //           } else {
-              //             return Text('Last Visit: ${snapshot.data}');
-              //           }
-              //         },
-              //       ),
-              //
-              //     ],),
-              //   ),
-              // ),
-              Expanded(
-                child:   Column(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Container(
-                              child: AlertDialog(
-                                title: Text(
-                                    "You are going out of Vayu-Samparc. If you are okay with it, you can proceed."),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => OtherLinks()),
-                                        );
-                                      },
-                                      child: Text("Yes")),
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text("No")),
-                                ],
-                              ),
-                            );
-                          });
-                    },
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: const AutoSizeText(
-                        "External Links....",
-                        style: TextStyle(
-                          fontSize: 15,
+                // Expanded(
+                //   child: Padding(
+                //     padding: const EdgeInsets.only(left: 2.0),
+                //     child: Column(
+                //       children: [
+                //       FutureBuilder<String>(
+                //         future: getLastLoginTime(),
+                //         builder: (context, snapshot) {
+                //           if (snapshot.connectionState == ConnectionState.waiting) {
+                //             return CircularProgressIndicator();
+                //           } else if (snapshot.hasError) {
+                //             return Text('Last Visit: Never');
+                //           } else {
+                //             return Text('Last Visit: ${snapshot.data}');
+                //           }
+                //         },
+                //       ),
+                //
+                //     ],),
+                //   ),
+                // ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Container(
+                                  child: AlertDialog(
+                                    title: Text(
+                                        "You are going out of Vayu-Samparc. If you are okay with it, you can proceed."),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      OtherLinks()),
+                                            );
+                                          },
+                                          child: Text("Yes")),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("No")),
+                                    ],
+                                  ),
+                                );
+                              });
+                        },
+                        child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: const AutoSizeText(
+                            "External Links....",
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                            minFontSize: 3,
+                            maxFontSize: 18,
+                            maxLines: 2,
+                          ),
                         ),
-                        minFontSize: 3,
-                        maxFontSize: 18,
-                        maxLines: 2,
                       ),
-                    ),
-                  ),
-                ],),),
+                    ],),),
               ],
             ),
             // Row(
@@ -1039,30 +1285,96 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _listen() async {
-    if (!_isListening) {
-      bool available = await _speech.initialize(
-        onStatus: (val) => print('onStatus: $val'),
-        onError: (val) => print('onError: $val'),
-      );
-      if (available) {
-        setState(() => _isListening = true);
-        _speech.listen(
-          onResult: (val) => setState(() {
-            _text = val.recognizedWords;
-          }),
-        );
-      } else {
-        setState(() => _isListening = false);
-        _speech.stop();
-      }
-    }
-  }
-  // void toggleRecording() {
-  //
-  //   SpeechApi.toggleRecording(
-  //     onResult: (String text) => setState(() => this.text=text),
-  //
-  //   );
+  void welcomePopUp(context,) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            insetPadding: EdgeInsets.zero,
+            contentPadding:
+            const EdgeInsets.symmetric(vertical: 24, horizontal: 14),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(
+                    color: Colors.black, width: 2, style: BorderStyle.solid),
+                borderRadius: BorderRadius.circular(18)),
+            content: Builder(builder: (context) {
+              return SizedBox(
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.5,
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height * 0.15,
+                child:  Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text("Welcome",style:
+                        TextStyle( fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,),),
+                      TextFormField(
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        readOnly: true,
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            primary: const Color(0xFF0b0c5b),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28))),
+                        child: Text("OK",style:
+                        TextStyle( fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,),),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          );
+        });
+  //   void _listen() async {
+  //     if (!_isListening) {
+  //       bool available = await _speech.initialize(
+  //         onStatus: (val) => print('onStatus: $val'),
+  //         onError: (val) => print('onError: $val'),
+  //       );
+  //       if (available) {
+  //         setState(() => _isListening = true);
+  //         _speech.listen(
+  //           onResult: (val) =>
+  //               setState(() {
+  //                 _text = val.recognizedWords;
+  //               }),
+  //         );
+  //       } else {
+  //         setState(() => _isListening = false);
+  //         _speech.stop();
+  //       }
+  //     }
+  //   }
+  //   // void toggleRecording() {
+  //   //
+  //   //   SpeechApi.toggleRecording(
+  //   //     onResult: (String text) => setState(() => this.text=text),
+  //   //
+  //   //   );
+  //   // }
   // }
-}
+}}

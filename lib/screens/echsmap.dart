@@ -24,10 +24,14 @@ class _EchsMapState extends State<EchsMap> {
   var type = ["URC", "ECHS"];
   var selectedValue = "";
   var selectedState = "";
-  var selectedType = "URC";
+  var selectedType = null;
 
   double currentLat = 0;
   double currentLon = 0;
+
+  bool isLoading = true;
+  bool isInternetConnection = true;
+  bool isFetchDisabled = true;
 
   @override
   void initState() {
@@ -39,8 +43,8 @@ class _EchsMapState extends State<EchsMap> {
   Future<void> getCurrentLoc() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-print(currentLat = position.latitude);
-print(currentLon = position.longitude);
+    print(currentLat = position.latitude);
+    print(currentLon = position.longitude);
     currentLat = position.latitude;
     currentLon = position.longitude;
   }
@@ -54,7 +58,6 @@ print(currentLon = position.longitude);
           .map((data) => CountryModel.fromJson(data))
           .toList();
       selectedState = stateData[0].city_code;
-      ;
       getLatLon();
       setState(() {});
     } else {
@@ -63,26 +66,25 @@ print(currentLon = position.longitude);
   }
 
   Future<void> getLatLon() async {
-    var type = "U";
-    if (selectedType == "ECHS") {
-      type = "E";
+    if (selectedState != "" && selectedType != null) {
+      var type = selectedType == "ECHS" ? "E" : "U";
+      final response = await http.get(
+          Uri.parse("$baseURL/MAP_URC_ECHS/MAP_URC_ECHS/$type/$selectedState"));
+      var responseBody = jsonDecode(response.body);
+      locationData = (responseBody["items"] as List)
+          .map((data) => LocationModel.fromJson(data))
+          .toList();
+      for (int i = 0; i < locationData.length; i++) {
+        locationData[i].distance = calculateDistance(
+            currentLat,
+            currentLon,
+            double.parse(locationData[i].latitude),
+            double.parse(locationData[i].longitude));
+      }
+      setState(() {
+        isLoading = false;
+      });
     }
-    print("$baseURL/MAP_URC_ECHS/MAP_URC_ECHS/$type/$selectedState");
-    final response = await http.get(
-        Uri.parse("$baseURL/MAP_URC_ECHS/MAP_URC_ECHS/$type/$selectedState"));
-    var responseBody = jsonDecode(response.body);
-    locationData = (responseBody["items"] as List)
-        .map((data) => LocationModel.fromJson(data))
-        .toList();
-    for (int i = 0; i < locationData.length; i++) {
-      locationData[i].distance = calculateDistance(
-          currentLat,
-          currentLon,
-
-          double.parse(locationData[i].latitude),
-          double.parse(locationData[i].longitude));
-    }
-    setState(() {});
   }
 
   double calculateDistance(lat1, lon1, lat2, lon2) {
@@ -96,12 +98,11 @@ print(currentLon = position.longitude);
   }
 
   void openMap(index) {
-    MapsLauncher.launchCoordinates(double.parse(locationData[index].latitude),
+    MapsLauncher.launchCoordinates(
+        double.parse(locationData[index].latitude),
         double.parse(locationData[index].longitude));
   }
 
-  bool isLoading = true;
-  bool isInternetConnection = true;
   void checkInternetConnection() async {
     bool internetConnection = await InternetConnectionChecker().hasConnection;
     if (internetConnection == true) {

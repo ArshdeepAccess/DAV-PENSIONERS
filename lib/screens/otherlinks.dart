@@ -1,3 +1,5 @@
+import 'package:dav2/screens/pcda.dart';
+import 'package:dav2/screens/sparshwebview.dart';
 import 'package:flutter/material.dart';
 import 'Ig1.dart';
 import 'Ig2.dart';
@@ -292,6 +294,74 @@ class _OtherLinksState extends State<OtherLinks> {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: AssetImage("assets/images/Img9.png"),
+                              // fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.width / 300),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SparshWebview()),
+                          );
+                        },
+                        // onTap: () =>
+                        //     launchUrl(Uri.parse('https://www.mygov.in/')),
+                        child: Container(
+                          // height: 30,
+                          // width: 150,
+                          height: size.height * 0.09,
+                          width: size.width * 0.25,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage("assets/images/sparsh-logo.png"),
+                              // fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.width / 300),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Pcda()),
+                          );
+                        },
+                        // onTap: () =>
+                        //     launchUrl(Uri.parse('https://www.desw.gov.in/')),
+                        child: Container(
+                          // height: 30,
+                          // width: 150,
+                          height: size.height * 0.09,
+                          width: size.width * 0.25,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage("assets/images/pcda.png"),
                               // fit: BoxFit.cover,
                             ),
                           ),

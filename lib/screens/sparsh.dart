@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dav2/Models/Sparsh_model.dart';
 import 'package:dav2/screens/pdf.dart';
 import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
@@ -8,15 +9,15 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:http/http.dart' as http;
 import '../Models/Noticeboard_model.dart';
 
-class NoticeBoard extends StatefulWidget {
-  const NoticeBoard({Key? key}) : super(key: key);
+class Sparsh extends StatefulWidget {
+  const Sparsh({Key? key}) : super(key: key);
 
   @override
-  State<NoticeBoard> createState() => _NoticeBoardState();
+  State<Sparsh> createState() => _SparshState();
 }
 
-class _NoticeBoardState extends State<NoticeBoard> {
-  List<NoticeboardModel> data = [];
+class _SparshState extends State<Sparsh> {
+  List<SparshModel> data = [];
 
   @override
   void initState() {
@@ -27,13 +28,13 @@ class _NoticeBoardState extends State<NoticeBoard> {
 
   Future<void> getData() async {
     print(
-        "https://iafpensioners.gov.in/ords/dav_portal/NOTICEBOARD/NOTICEBOARD");
+        "https://iafpensioners.gov.in/ords/dav_portal/SPARSH/SPARSH");
     final response = await http.get(Uri.parse(
-        'https://iafpensioners.gov.in/ords/dav_portal/NOTICEBOARD/NOTICEBOARD'));
+        'https://iafpensioners.gov.in/ords/dav_portal/SPARSH/SPARSH'));
     if (response.statusCode == 200) {
       var responseBody = jsonDecode(response.body);
       data = (responseBody["items"] as List)
-          .map((data) => NoticeboardModel.fromJson(data))
+          .map((data) => SparshModel.fromJson(data))
           .toList();
       setState(() {});
     } else {
@@ -150,7 +151,7 @@ class _NoticeBoardState extends State<NoticeBoard> {
                   vertical: MediaQuery.of(context).size.width / 20,
                 ),
                 child: Text(
-                  "Notice Board",
+                  "SPARSH",
                   style: TextStyle(
                     color: Color(0xFF394361),
                     fontSize: 20,

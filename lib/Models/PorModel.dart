@@ -42,9 +42,9 @@ class PorModel {
   String? link;
   String? porRemarkAuth;
   int? porOccuranceNo;
-  Null? porCancelRef;
-  Null? porCancelRemarks;
-  Null? porCancelBy;
+  // Null? porCancelRef;
+  // Null? porCancelRemarks;
+  // Null? porCancelBy;
   String? add1A;
   String? add2A;
   String? add3A;
@@ -55,11 +55,11 @@ class PorModel {
   String? pobB;
   String? dobB;
   String? sexB;
-  Null? nameC;
-  Null? newNameC;
-  Null? relationC;
+  // Null? nameC;
+  // Null? newNameC;
+  // Null? relationC;
   String? wefC;
-  Null? download;
+  // Null? download;
 
   PorModel(
       {this.rownum,
@@ -73,9 +73,9 @@ class PorModel {
         this.link,
         this.porRemarkAuth,
         this.porOccuranceNo,
-        this.porCancelRef,
-        this.porCancelRemarks,
-        this.porCancelBy,
+        // this.porCancelRef,
+        // this.porCancelRemarks,
+        // this.porCancelBy,
         this.add1A,
         this.add2A,
         this.add3A,
@@ -86,11 +86,12 @@ class PorModel {
         this.pobB,
         this.dobB,
         this.sexB,
-        this.nameC,
-        this.newNameC,
-        this.relationC,
+        // this.nameC,
+        // this.newNameC,
+        // this.relationC,
         this.wefC,
-        this.download});
+        // this.download
+      });
 
   PorModel.fromJson(Map<String, dynamic> json) {
     rownum = json['rownum'];
@@ -104,9 +105,9 @@ class PorModel {
     link = json['link'];
     porRemarkAuth = json['por_remark_auth'];
     porOccuranceNo = json['por_occurance_no'];
-    porCancelRef = json['por_cancel_ref'];
-    porCancelRemarks = json['por_cancel_remarks'];
-    porCancelBy = json['por_cancel_by'];
+    // porCancelRef = json['por_cancel_ref'];
+    // porCancelRemarks = json['por_cancel_remarks'];
+    // porCancelBy = json['por_cancel_by'];
     add1A = json['add1_a'];
     add2A = json['add2_a'];
     add3A = json['add3_a'];
@@ -117,11 +118,11 @@ class PorModel {
     pobB = json['pob_b'];
     dobB = json['dob_b'];
     sexB = json['sex_b'];
-    nameC = json['name_c'];
-    newNameC = json['new_name_c'];
-    relationC = json['relation_c'];
+    // nameC = json['name_c'];
+    // newNameC = json['new_name_c'];
+    // relationC = json['relation_c'];
     wefC = json['wef_c'];
-    download = json['download'];
+    // download = json['download'];
   }
 
   Map<String, dynamic> toJson() {
@@ -137,9 +138,9 @@ class PorModel {
     data['link'] = this.link;
     data['por_remark_auth'] = this.porRemarkAuth;
     data['por_occurance_no'] = this.porOccuranceNo;
-    data['por_cancel_ref'] = this.porCancelRef;
-    data['por_cancel_remarks'] = this.porCancelRemarks;
-    data['por_cancel_by'] = this.porCancelBy;
+    // data['por_cancel_ref'] = this.porCancelRef;
+    // data['por_cancel_remarks'] = this.porCancelRemarks;
+    // data['por_cancel_by'] = this.porCancelBy;
     data['add1_a'] = this.add1A;
     data['add2_a'] = this.add2A;
     data['add3_a'] = this.add3A;
@@ -150,11 +151,11 @@ class PorModel {
     data['pob_b'] = this.pobB;
     data['dob_b'] = this.dobB;
     data['sex_b'] = this.sexB;
-    data['name_c'] = this.nameC;
-    data['new_name_c'] = this.newNameC;
-    data['relation_c'] = this.relationC;
+    // data['name_c'] = this.nameC;
+    // data['new_name_c'] = this.newNameC;
+    // data['relation_c'] = this.relationC;
     data['wef_c'] = this.wefC;
-    data['download'] = this.download;
+    // data['download'] = this.download;
     return data;
   }
 }

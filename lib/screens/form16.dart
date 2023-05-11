@@ -258,26 +258,26 @@ class _Form16State extends State<Form16> {
                           children: [
                             Row(
                               children: [
-                                Column(
-                                  children: [
-                                    Text("Sr No:",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Column(
-                                  children: [
-                                    Text(data[position].sr_no.toString()),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
+                                // Column(
+                                //   children: [
+                                //     Text("Sr No:",
+                                //       style: TextStyle(
+                                //         fontWeight: FontWeight.w500,
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
+                                // SizedBox(
+                                //   width: 5,
+                                // ),
+                                // Column(
+                                //   children: [
+                                //     Text(data[position].sr_no.toString()),
+                                //   ],
+                                // ),
+                                // SizedBox(
+                                //   width: 20,
+                                // ),
                                 Column(
                                   children: [
                                     Text("Year:",
@@ -345,7 +345,7 @@ class _Form16State extends State<Form16> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => pdf(
-                                                  data[position].download),
+                                                  data[position].category),
                                             ));
                                       },
                                       child: Icon(
@@ -376,7 +376,7 @@ class _Form16State extends State<Form16> {
                                  GestureDetector(
                                       onTap: () {
                                         saveFile(data[position]
-                                            .download);
+                                            .category);
                                       },
                                       child: Icon(
                                         Icons.download,

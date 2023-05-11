@@ -21,11 +21,11 @@ class _Ig5State extends State<Ig5> {
           "VAYU-SAMPARC",
           style: TextStyle(fontSize: 20),
         ),
-        actions: [
-          IconButton(onPressed: (){},
-              // toggleRecording,
-              icon: Icon(Icons.mic)),
-          Image(image: AssetImage("assets/images/newlogo.png"))],
+        // actions: [
+        //   IconButton(onPressed: (){},
+        //       // toggleRecording,
+        //       icon: Icon(Icons.mic)),
+        //   Image(image: AssetImage("assets/images/newlogo.png"))],
       ),
       drawer: Maindrawer(),
       body: WebView(

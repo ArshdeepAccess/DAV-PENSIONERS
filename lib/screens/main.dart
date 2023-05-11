@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'splashscreen.dart';
 
 Future<void> main()
+
 // async
 async {
+
 HttpOverrides.global = new MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
 
   runApp(MyApp());
+
 }
 
 

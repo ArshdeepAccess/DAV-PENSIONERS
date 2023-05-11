@@ -13,52 +13,24 @@ import 'hmscreen1.dart';
 import 'dart:async';
 import 'dart:io';
 
-class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+class Profile1 extends StatefulWidget {
+  const Profile1({Key? key}) : super(key: key);
   @override
-  State<Profile> createState() => _ProfileState();
+  State<Profile1> createState() => _Profile1State();
 }
 
-class _ProfileState extends State<Profile> {
+class _Profile1State extends State<Profile1> {
+
   File? _image;
   Future<void> _selectImage() async {
-    final optionSelected = await showDialog<int>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select image'),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, 0),
-              child: const Text('Camera'),
-            ),
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, 1),
-              child: const Text('Gallery'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (optionSelected == null) {
-      return;
-    }
-
     final pickedFile = await ImagePicker().getImage(
-      source: optionSelected == 0 ? ImageSource.camera : ImageSource.gallery,
+      source: ImageSource.gallery,
     );
-
-    if (pickedFile == null) {
-      return;
-    }
-
     setState(() {
-      _image = File(pickedFile.path);
+      _image = File(pickedFile!.path);
     });
     _uploadImage();
   }
-
   Future<void> _uploadImage() async {
     if (_image == null) {
       return;
@@ -69,8 +41,7 @@ class _ProfileState extends State<Profile> {
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse(
-          '$baseURL/PROFILE_PIC/PROFILE_PIC?UP_SERVICE_NO=$serviceNumber&UP_VAT_CAT=$cat&UP_PROFILE_PIC=Image/jpg'),
+      Uri.parse('$baseURL/PROFILE_PIC/PROFILE_PIC?UP_SERVICE_NO=$serviceNumber&UP_VAT_CAT=$cat&UP_PROFILE_PIC=Image/jpg'),
     );
 
     request.files.add(
@@ -87,12 +58,6 @@ class _ProfileState extends State<Profile> {
     } else {
       print('Failed to upload profile picture.');
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Profile picture uploaded successfully!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
   }
 
   late bool private_status;
@@ -113,12 +78,15 @@ class _ProfileState extends State<Profile> {
   var categoryController = TextEditingController();
   var serviceNumberController = TextEditingController();
   var passwordController = TextEditingController();
-  List<LoginModel> data1 = [];
-  List<String> items = <String>['Officer', 'Airmen/NCs(E)'];
-  String dropDownValue = 'Officer';
+  // List<LoginModel> data1 = [];
+  //
+  //
+  // List<String> items = <String>['Officer', 'Airmen/NCs(E)'];
+  // String dropDownValue = 'Officer';
 
   var serviceNumber = "";
   var category = "";
+
   var name = "";
   var pan = "";
   var aadhar = "";
@@ -128,109 +96,6 @@ class _ProfileState extends State<Profile> {
   var dod = "";
   var email = "";
   var mobile = "";
-
-  Future<void> doMpin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var serviceNumber = prefs.getString('ServiceNumber') ?? "";
-    var cat = prefs.getString('Category') ?? "";
-    print(
-        "$baseURL/MPINVALIDATE/MPINVALIDATE/${serviceNumberController.text}/$cat/${passwordController.text.toString()}");
-    final response = await http.get(Uri.parse(
-        "$baseURL/MPINVALIDATE/MPINVALIDATE/${serviceNumberController.text}/$cat/${passwordController.text.toString()}"));
-    var responseBody = jsonDecode(response.body);
-
-    if (responseBody["items"][0]["result"] == 0) {
-      _showMyDialog("Invalid Mpin");
-    } else {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('Category', cat);
-      prefs.setString('ServiceNumber', serviceNumberController.text);
-      var responseBody = jsonDecode(response.body);
-      print(responseBody);
-      data1 = (responseBody["items"] as List)
-          .map((data) => LoginModel.fromJson(data))
-          .toList();
-      prefs.setString('MPIN', passwordController.text.toString());
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Profile1()),
-      );
-    }
-    isLoading = false;
-    setState(() {});
-  }
-
-  String maskAadharNumber(String aadharNumber) {
-    int maskLength = 8;
-    String maskedChars = "*" * maskLength;
-    return maskedChars + aadharNumber.substring(maskLength);
-  }
-
-  String maskPanNumber(String panNumber) {
-    String maskedPanNumber = "";
-    if (panNumber.length > 4) {
-      maskedPanNumber = "*" * (panNumber.length - 4) +
-          panNumber.substring(panNumber.length - 4);
-    } else {
-      maskedPanNumber = panNumber;
-    }
-    return maskedPanNumber;
-  }
-
-  void _showMPINVerificationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Enter MPIN'),
-        content: TextFormField(
-          controller: passwordController,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter MPIN';
-            }
-            if (value.length < 4) {
-              return "Please enter 4 digit MPIN";
-            }
-            return null;
-          },
-          maxLength: 4,
-          obscureText: true,
-          obscuringCharacter: '●',
-          onChanged: (value) {
-            setState(() {
-              _secureText = !_secureText;
-            });
-          },
-          showCursor: true,
-        ),
-        actions: <Widget>[
-          ElevatedButton(
-            child: Text('CANCEL'),
-            onPressed: () => Navigator.pop(context),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              doMpin();
-            },
-            style: ElevatedButton.styleFrom(
-                primary: const Color(0xFF0b0c5b),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28))),
-            child: const AutoSizeText(
-              "Verify",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              minFontSize: 3,
-              maxFontSize: 18,
-              maxLines: 2,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -255,7 +120,6 @@ class _ProfileState extends State<Profile> {
     getProfilePic();
     checkInternetConnection();
   }
-
   var newImage;
 
   Future<void> getProfilePic() async {
@@ -263,18 +127,14 @@ class _ProfileState extends State<Profile> {
     var serviceNumber = prefs.getString('ServiceNumber') ?? "";
     var cat = prefs.getString('Category') ?? "";
 
-    final response = await http.get(Uri.parse(
-        "$baseURL/PROFILE_PIC_VIEW/PROFILE_PIC_VIEW/?UP_SERVICE_NO=$serviceNumber&UP_VAT_CAT=$cat"));
+    final response = await http.get(Uri.parse("$baseURL/PROFILE_PIC_VIEW/PROFILE_PIC_VIEW/?UP_SERVICE_NO=$serviceNumber&UP_VAT_CAT=$cat"));
     if (response.statusCode == 200) {
       var responseBody = jsonDecode(response.body);
       var image = base64.decode(responseBody['items'][0]['up_profile_pic']);
 
-      newImage = Image.memory(
-        image,
-        fit: BoxFit.fill,
-      );
+      newImage = Image.memory(image, fit: BoxFit.fill,);
       setState(() {});
-    } else {
+    }else{
       print(response.statusCode);
     }
   }
@@ -316,9 +176,9 @@ class _ProfileState extends State<Profile> {
         //       maskAadharNumber(b);
         // }
 
-        panController.text = maskPanNumber(data[0].user_pan_no);
+        panController.text = (data[0].user_pan_no);
         aadharController.text =
-            maskAadharNumber(data[0].user_aadhar_no.toString());
+            (data[0].user_aadhar_no.toString());
         // panController.text = data[0].user_pan_no;
         // aadharController.text = data[0].user_aadhar_no.toString();
         suffixController.text = data[0].user_chk_suffix;
@@ -340,12 +200,12 @@ class _ProfileState extends State<Profile> {
 
     print(
         "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}"
-        "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}");
+            "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}");
 
     final response = await http.put(
         Uri.parse(
             "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}"
-            "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}"),
+                "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}"),
         body: {
           "SERVICE_NO": serviceNumberController,
           "CATEGORY": cat,
@@ -416,9 +276,31 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       backgroundColor: Color(0xFFf2fcff),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+      //   actions: [
+      // IconButton(
+      // icon: Icon(Icons.arrow_back),
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => HomeScreen()),
+      //     );
+      //   },
+      // )
+      //   ],
         backgroundColor: Color(0xFFd3eaf2),
         title: Row(
           children: [
+
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                );
+              },
+            ),
             Image(
               image: AssetImage(
                 "assets/images/dav-new-logo.png",
@@ -439,66 +321,53 @@ class _ProfileState extends State<Profile> {
             primary: false,
             itemCount: data.length,
             separatorBuilder: (context, position) => const SizedBox(
-                  height: 10,
-                ),
+              height: 10,
+            ),
             itemBuilder: (context, position) {
               return Column(
                 children: [
                   Stack(
                     children: [
-                      _image == null
-                          ? Center(
-                              child: SizedBox(
+                      _image == null ? Center(
+                          child: SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100.0),
+                                child: Container(color: Colors.grey)
+                            ),
+                          )
+                      ) : Center(
+                          child: SizedBox(
                               width: 100,
                               height: 100,
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
-                                  child: Container(color: Colors.grey)),
-                            ))
-                          : Center(
+                                  child: Image.file(_image!, fit: BoxFit.fill)
+                              )
+                          )),
+                      _image == null ? (
+                          Center(
                               child: SizedBox(
                                   width: 100,
                                   height: 100,
                                   child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child: Image.file(_image!,
-                                          fit: BoxFit.fill)))),
-                      _image == null
-                          ? (Center(
-                              child: SizedBox(
-                                   width: 100,
-                                  height: 100,
-                                  child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child: newImage))))
-                          : Container(),
+                                      borderRadius: BorderRadius.circular(100.0),
+                                      child: newImage
+                                  )
+                              ))) : Container(),
+
                       Positioned(
                         top: 60,
-                        right: 90,
+                        right: 110,
                         child: IconButton(
                           icon: Icon(Icons.camera_alt),
                           onPressed: () {
                             _selectImage();
                           },
                         ),
-                      ),
-                    ],
+                      ),   ],
                   ),
-                  // _image == null
-                  //     ? Text('No image selected.')
-                  //     : Image.file(_image!),
-                  // SizedBox(height: 16),
-                  // ElevatedButton(
-                  //   onPressed: _selectImage,
-                  //   child: Text('Select Image'),
-                  // ),
-                  // SizedBox(height: 16),
-                  // ElevatedButton(
-                  //   onPressed: _uploadImage,
-                  //   child: Text('Upload Image'),
-                  // ),
                   SizedBox(
                     // height: 15,
                     height: size.height * 0.02,
@@ -565,40 +434,41 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    // height: 15,
-                    height: size.height * 0.01,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Text(
-                        "Do you want to see your full PAN & Aadhar Number.Then click on MPIN button",
-                        style: TextStyle(
-                            color: Color(0xFF0b0c5b),
-                            fontWeight: FontWeight.bold),
-                      )),
-                      Column(
-                        children: [
-                          ElevatedButton(
-                            // onPressed: () {
-                            //   Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(builder: (context) => Mpin()),
-                            //   );
-                            // },
-                            onPressed: () => _showMPINVerificationDialog(),
-
-                            style: ElevatedButton.styleFrom(
-                              primary: const Color(0xFF394361),
-                            ),
-
-                            child: const Text('MPIN'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  // SizedBox(
+                  //   // height: 15,
+                  //   height: size.height * 0.01,
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     Expanded(
+                  //         child: Text(
+                  //           "Do you want to see your full PAN & Aadhar Number.Then click on MPIN button",
+                  //           style: TextStyle(
+                  //               color: Color(0xFF0b0c5b),
+                  //               fontWeight: FontWeight.bold),
+                  //         )),
+                  //     Column(
+                  //       children: [
+                  //         ElevatedButton(
+                  //           // onPressed: () {
+                  //           //   Navigator.push(
+                  //           //     context,
+                  //           //     MaterialPageRoute(builder: (context) => Mpin()),
+                  //           //   );
+                  //           // },
+                  //           onPressed: () => _showMPINVerificationDialog(),
+                  //
+                  //           style: ElevatedButton.styleFrom(
+                  //             primary: const Color(0xFF394361),
+                  //           ),
+                  //
+                  //           child: const Text('MPIN'),
+                  //         ),
+                  //
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
                   SizedBox(
                     // height: 15,
                     height: size.height * 0.01,
@@ -733,11 +603,11 @@ class _ProfileState extends State<Profile> {
                     children: [
                       Expanded(
                           child: Text(
-                        "Allow to hide your mobile no. & email from your coursemates",
-                        style: TextStyle(
-                            color: Color(0xFF0b0c5b),
-                            fontWeight: FontWeight.bold),
-                      )),
+                            "Allow to hide your mobile no. & email from your coursemates",
+                            style: TextStyle(
+                                color: Color(0xFF0b0c5b),
+                                fontWeight: FontWeight.bold),
+                          )),
                       Column(
                         children: [
                           Switch(
@@ -793,7 +663,7 @@ class _ProfileState extends State<Profile> {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
                               } else if (!RegExp(
-                                      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                                  r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                                   .hasMatch(value)) {
                                 return 'Please enter a valid email';
                               }

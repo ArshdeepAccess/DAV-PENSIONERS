@@ -18,10 +18,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   // late SharedPreferences prefs;
   // late String _lastLogin;
-
   bool _secureText = true;
   bool isLoading = false;
 
@@ -41,11 +39,11 @@ class _LoginState extends State<Login> {
   var pkController = TextEditingController();
   var pk = "";
 
+
   @override
   void initState() {
     super.initState();
     getData();
-
     // _initSharedPreferences();
   }
   // Future<void> _initSharedPreferences() async {
@@ -64,13 +62,11 @@ class _LoginState extends State<Login> {
   // }
   Future<void> getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     category = prefs.getString('Category') ?? "";
     serviceNumber = prefs.getString('ServiceNumber') ?? "";
     Name = prefs.getString('name') ?? "";
     // pk = prefs.getString('PK') ?? "";
     // print(pk);
-
     print(Name);
     if (serviceNumber != "") {
       serviceNumberController.text = serviceNumber;

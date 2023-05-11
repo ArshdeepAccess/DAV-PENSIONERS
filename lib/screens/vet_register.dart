@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dav2/screens/help.dart';
 import 'package:dav2/screens/otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_number/mobile_number.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'VeteransLogin.dart';
 import 'constant.dart';
 import 'hmscreen1.dart';
 import 'mobile number.dart';
@@ -20,10 +22,11 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+
   bool _secureText = true;
   bool isLoading = false;
-  TextEditingController cat = TextEditingController();
 
+  TextEditingController cat = TextEditingController();
   TextEditingController serviceNumber = TextEditingController();
   TextEditingController aadharNumber = TextEditingController();
   TextEditingController mobileController = TextEditingController();
@@ -43,42 +46,9 @@ class _RegisterState extends State<Register> {
   void initState() {
     super.initState();
     getPermission();
-    // checkInternetConnection();
     mobileController.text = "+91";
   }
-  // bool isLoading1 = true;
-  // bool isInternetConnection = true;
-  // void checkInternetConnection()async{
-  //   bool internetConnection = await InternetConnectionChecker().hasConnection;
-  //   if(internetConnection == true)
-  //   {
-  //     doRegister();
-  //   }
-  //   else
-  //   {
-  //     setState(() {
-  //       isInternetConnection = false;
-  //     });
-  //     _showMyDialog1("Please check your internet connectivity");
-  //   }
-  //
-  //
-  // }
-  // Future<void> _showMyDialog1(message) async {
-  //   showDialog<String>(
-  //     context: context,
-  //     builder: (BuildContext context) => AlertDialog(
-  //       title: const Text('No Connection'),
-  //       content: Text(message),
-  //       actions: <Widget>[
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context, 'OK'),
-  //           child: const Text('OK'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+
   Future<void> getPermission() async {
     await MobileNumber.requestPhonePermission;
     final String? mobileNumber = await MobileNumber.mobileNumber;
@@ -717,14 +687,46 @@ class _RegisterState extends State<Register> {
                       child: CircularProgressIndicator(),
                     ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Help()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF394361),
                     ),
                     child: const Text('Help'),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              child: AlertDialog(
+                                title: Text(
+                                    "You are going to cancel your registration. If you are okay with it, you can proceed."),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Login()),
+                                        );
+                                      },
+                                      child: Text("Yes")),
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text("No")),
+                                ],
+                              ),
+                            );
+                          });
+                    },
                     style: ElevatedButton.styleFrom(
                       primary: const Color(0xFF394361),
                     ),
