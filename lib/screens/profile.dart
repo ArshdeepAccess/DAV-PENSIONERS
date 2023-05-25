@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dav2/Models/login_model.dart';
 import 'package:dav2/Models/pfofilenameModel.dart';
 import 'package:dav2/screens/profile1.dart';
@@ -12,6 +11,7 @@ import 'constant.dart';
 import 'hmscreen1.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:photo_view/photo_view.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -198,7 +198,7 @@ class _ProfileState extends State<Profile> {
           obscuringCharacter: '●',
           onChanged: (value) {
             setState(() {
-              _secureText = !_secureText;
+               _secureText = !_secureText;
             });
           },
           showCursor: true,
@@ -207,6 +207,10 @@ class _ProfileState extends State<Profile> {
           ElevatedButton(
             child: Text('CANCEL'),
             onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+                primary: const Color(0xFF0b0c5b),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -216,15 +220,12 @@ class _ProfileState extends State<Profile> {
                 primary: const Color(0xFF0b0c5b),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(28))),
-            child: const AutoSizeText(
+            child: Text(
               "Verify",
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                // fontSize: 18,
+                // fontWeight: FontWeight.bold,
               ),
-              minFontSize: 3,
-              maxFontSize: 18,
-              maxLines: 2,
             ),
           ),
         ],
@@ -247,6 +248,8 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+
+
 
   @override
   void initState() {
@@ -315,7 +318,6 @@ class _ProfileState extends State<Profile> {
         //   aadharController.text =
         //       maskAadharNumber(b);
         // }
-
         panController.text = maskPanNumber(data[0].user_pan_no);
         aadharController.text =
             maskAadharNumber(data[0].user_aadhar_no.toString());
@@ -340,12 +342,12 @@ class _ProfileState extends State<Profile> {
 
     print(
         "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}"
-        "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}");
+            "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}");
 
     final response = await http.put(
         Uri.parse(
             "${baseURL}/UPDATE/PRIVACY_FLAG?SERVICE_NO=${serviceNumberController}&CATEGORY=${cat}&FLAG_YN=${value.toString()}"
-            "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}"),
+                "&EMAIL=${emailController.text}&MOBILE=${mobileController.text.toString()}"),
         body: {
           "SERVICE_NO": serviceNumberController,
           "CATEGORY": cat,
@@ -357,7 +359,7 @@ class _ProfileState extends State<Profile> {
     if (response.statusCode == 200) {
       print("ok");
     }
-    _showMyDialog1("Record Updated Successfully");
+    // _showMyDialog1("Record Updated Successfully");
   }
 
   Future<void> _showMyDialog1(message) async {
@@ -368,17 +370,20 @@ class _ProfileState extends State<Profile> {
         content: Text(message),
         actions: <Widget>[
           TextButton(
-            // onPressed: () => Navigator.pop(context, 'OK'),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            ),
+            onPressed: () {
+              Navigator.pop(context, 'OK');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Profile()),
+              );
+            },
             child: const Text('OK'),
           ),
         ],
       ),
     );
   }
+
 
   bool isLoading = true;
   bool isInternetConnection = true;
@@ -409,7 +414,6 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -439,53 +443,69 @@ class _ProfileState extends State<Profile> {
             primary: false,
             itemCount: data.length,
             separatorBuilder: (context, position) => const SizedBox(
-                  height: 10,
-                ),
+              height: 10,
+            ),
             itemBuilder: (context, position) {
               return Column(
                 children: [
                   Stack(
                     children: [
-                      _image == null
-                          ? Center(
-                              child: SizedBox(
-                              width: 100,
-                              height: 100,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  child: Container(color: Colors.grey)),
-                            ))
-                          : Center(
-                              child: SizedBox(
-                                  width: 100,
-                                  height: 100,
-                                  child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child: Image.file(_image!,
-                                          fit: BoxFit.fill)))),
-                      _image == null
-                          ? (Center(
-                              child: SizedBox(
-                                   width: 100,
-                                  height: 100,
-                                  child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child: newImage))))
-                          : Container(),
-                      Positioned(
-                        top: 60,
-                        right: 90,
-                        child: IconButton(
-                          icon: Icon(Icons.camera_alt),
-                          onPressed: () {
-                            _selectImage();
-                          },
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PhotoView(
+                                imageProvider: _image != null
+                                    ? FileImage(_image!)
+                                    : newImage != null
+                                    ? newImage.image
+                                    : AssetImage('assets/images/placeholder.png'),
+                              ),
+                            ),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100.0),
+                          child: Stack(
+                            children: [
+                              _image != null
+                                  ? Image.file(
+                                _image!,
+                                fit: BoxFit.fill,
+                                width: 100,
+                                height: 100,
+                              )
+                                  : newImage != null
+                                  ? Image(
+                                image: newImage.image,
+                                fit: BoxFit.fill,
+                                width: 100,
+                                height: 100,
+                              )
+                                  : Image.asset(
+                                'assets/images/placeholder.png',
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.fill,
+                              ),
+                              Positioned(
+                                top: 60,
+                                right: 0,
+                                child: IconButton(
+                                  icon: Icon(Icons.camera_alt),
+                                  onPressed: () {
+                                    _selectImage();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
                   ),
+
                   // _image == null
                   //     ? Text('No image selected.')
                   //     : Image.file(_image!),
@@ -573,11 +593,11 @@ class _ProfileState extends State<Profile> {
                     children: [
                       Expanded(
                           child: Text(
-                        "Do you want to see your full PAN & Aadhar Number.Then click on MPIN button",
-                        style: TextStyle(
-                            color: Color(0xFF0b0c5b),
-                            fontWeight: FontWeight.bold),
-                      )),
+                            "Do you want to see your full PAN & Aadhar Number.Then click on MPIN button",
+                            style: TextStyle(
+                                color: Color(0xFF0b0c5b),
+                                fontWeight: FontWeight.bold),
+                          )),
                       Column(
                         children: [
                           ElevatedButton(
@@ -733,11 +753,11 @@ class _ProfileState extends State<Profile> {
                     children: [
                       Expanded(
                           child: Text(
-                        "Allow to hide your mobile no. & email from your coursemates",
-                        style: TextStyle(
-                            color: Color(0xFF0b0c5b),
-                            fontWeight: FontWeight.bold),
-                      )),
+                            "Allow to hide your mobile no. & email from your coursemates",
+                            style: TextStyle(
+                                color: Color(0xFF0b0c5b),
+                                fontWeight: FontWeight.bold),
+                          )),
                       Column(
                         children: [
                           Switch(
@@ -793,7 +813,7 @@ class _ProfileState extends State<Profile> {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
                               } else if (!RegExp(
-                                      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                                  r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                                   .hasMatch(value)) {
                                 return 'Please enter a valid email';
                               }
@@ -883,6 +903,7 @@ class _ProfileState extends State<Profile> {
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         doFlag(isLoading);
+                        _showMyDialog1("Record Updated Successfully");
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -890,6 +911,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     child: const Text('Submit'),
                   ),
+
                 ],
               );
             }),

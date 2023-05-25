@@ -3,14 +3,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 
-class Diploma extends StatefulWidget {
-  const Diploma({Key? key}) : super(key: key);
+class Issue extends StatefulWidget {
+  const Issue({Key? key}) : super(key: key);
 
   @override
-  State<Diploma> createState() => _DiplomaState();
+  State<Issue> createState() => _IssueState();
 }
 
-class _DiplomaState extends State<Diploma> {
+class _IssueState extends State<Issue> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   var serviceNumberController = TextEditingController();
@@ -65,7 +65,7 @@ class _DiplomaState extends State<Diploma> {
             Padding(
               padding: const EdgeInsets.only(left: 15.0),
               child: Text(
-                "Request for Certificate",
+                "Request for welfare issue",
                 // textAlign: TextAlign.right,
                 style: TextStyle(
                   color: Color(0xFF0b0c5b),
@@ -90,7 +90,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -110,7 +110,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -130,7 +130,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -150,7 +150,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -170,7 +170,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -190,7 +190,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -210,7 +210,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -230,7 +230,7 @@ class _DiplomaState extends State<Diploma> {
                   labelStyle: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.bold),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                 ),
               ),
             ),
@@ -259,7 +259,7 @@ class _DiplomaState extends State<Diploma> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Type of Certificate"),
+                      Text("Welfare issue Certificate"),
                       SizedBox(
                         height: 10,
                       ),
@@ -300,49 +300,7 @@ class _DiplomaState extends State<Diploma> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text("Certificate"),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey, // set the color of the border
-                            width: 1, // set the width of the border
-                          ),
-                          borderRadius: BorderRadius.circular(
-                              10), // set the circular border radius
-                        ),
-                        width: 300,
-                        height: 55, // set the width of the dropdown
-                        child: DropdownButton<String>(
-                          value: dropdownValue,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              dropdownValue = newValue!;
-                            });
-                          },
-                          underline: Container(),
-                          items: <String>[
-                            'Option 1',
-                            'Option 2',
-                            'Option 3',
-                            'Option 4'
-                          ].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(value),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text("Address Line 1"),
+                      Text("Correspondence Address Line 1"),
                       SizedBox(
                         height: 10,
                       ),
@@ -361,7 +319,7 @@ class _DiplomaState extends State<Diploma> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text("Address Line 2"),
+                      Text("Correspondence Address Line 2"),
                       TextField(
                         decoration: InputDecoration(
                           hintText: '',
@@ -568,65 +526,65 @@ class _DiplomaState extends State<Diploma> {
             SizedBox(
               height: 20,
             ),
-        ElevatedButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: Text("Upload Document for Request for Certificate"),
-                content: _pdf == null
-                    ? Text("Please select a PDF to upload")
-                    : Row(
-                  children: [
-                    Expanded(
-                      child: Text("Selected PDF: ${_pdf!.path}"),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: Text("Upload Certificate"),
+                    content: _pdf == null
+                        ? Text("Please select a PDF to upload")
+                        : Row(
+                      children: [
+                        Expanded(
+                          child: Text("Selected PDF: ${_pdf!.path}"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_pdf!= null) {
+                              await OpenFile.open(_pdf!.path);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: const Color(0xFF394361),
+                          ),
+                          child: Text("View"),
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_pdf!= null) {
-                          await OpenFile.open(_pdf!.path);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: const Color(0xFF394361),
+                    actions: [
+                      TextButton(
+                        child: Text("Cancel",),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                       ),
-                      child: Text("View"),
-                    ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    child: Text("Cancel",),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
 
-                  TextButton(
-                    child: Text("Select PDF"),
-                    onPressed: () async {
-                      FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['pdf'],
-                      );
-                      if (result != null) {
-                        setState(() {
-                          _pdf = File(result.files.single.path!);
-                        });
-                      }
-                      Navigator.pop(context);
-                    },
+                      TextButton(
+                        child: Text("Select PDF"),
+                        onPressed: () async {
+                          FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                            type: FileType.custom,
+                            allowedExtensions: ['pdf'],
+                          );
+                          if (result != null) {
+                            setState(() {
+                              _pdf = File(result.files.single.path!);
+                            });
+                          }
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
                   ),
-                ],
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                primary: const Color(0xFF394361),
               ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            primary: const Color(0xFF394361),
-          ),
-          child: Text("Document for Request Certificate"),
-        ),
+              child: Text("Document for Welfare issue Certificate"),
+            ),
             SizedBox(
               height: 20,
             ),

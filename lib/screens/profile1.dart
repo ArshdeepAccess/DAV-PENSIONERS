@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:dav2/Models/login_model.dart';
 import 'package:dav2/Models/pfofilenameModel.dart';
-import 'package:dav2/screens/profile1.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'constant.dart';
@@ -79,14 +77,11 @@ class _Profile1State extends State<Profile1> {
   var serviceNumberController = TextEditingController();
   var passwordController = TextEditingController();
   // List<LoginModel> data1 = [];
-  //
-  //
   // List<String> items = <String>['Officer', 'Airmen/NCs(E)'];
   // String dropDownValue = 'Officer';
 
   var serviceNumber = "";
   var category = "";
-
   var name = "";
   var pan = "";
   var aadhar = "";
@@ -175,7 +170,6 @@ class _Profile1State extends State<Profile1> {
         //   aadharController.text =
         //       maskAadharNumber(b);
         // }
-
         panController.text = (data[0].user_pan_no);
         aadharController.text =
             (data[0].user_aadhar_no.toString());
@@ -291,7 +285,6 @@ class _Profile1State extends State<Profile1> {
         backgroundColor: Color(0xFFd3eaf2),
         title: Row(
           children: [
-
             IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
@@ -328,46 +321,103 @@ class _Profile1State extends State<Profile1> {
                 children: [
                   Stack(
                     children: [
-                      _image == null ? Center(
-                          child: SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100.0),
-                                child: Container(color: Colors.grey)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PhotoView(
+                                imageProvider: _image != null
+                                    ? FileImage(_image!)
+                                    : newImage != null
+                                    ? newImage.image
+                                    : AssetImage('assets/images/placeholder.png'),
+                              ),
                             ),
-                          )
-                      ) : Center(
-                          child: SizedBox(
-                              width: 100,
-                              height: 100,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  child: Image.file(_image!, fit: BoxFit.fill)
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100.0),
+                          child: Stack(
+                            children: [
+                              _image != null
+                                  ? Image.file(
+                                _image!,
+                                fit: BoxFit.fill,
+                                width: 100,
+                                height: 100,
                               )
-                          )),
-                      _image == null ? (
-                          Center(
-                              child: SizedBox(
-                                  width: 100,
-                                  height: 100,
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(100.0),
-                                      child: newImage
-                                  )
-                              ))) : Container(),
-
-                      Positioned(
-                        top: 60,
-                        right: 110,
-                        child: IconButton(
-                          icon: Icon(Icons.camera_alt),
-                          onPressed: () {
-                            _selectImage();
-                          },
+                                  : newImage != null
+                                  ? Image(
+                                image: newImage.image,
+                                fit: BoxFit.fill,
+                                width: 100,
+                                height: 100,
+                              )
+                                  : Image.asset(
+                                'assets/images/placeholder.png',
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.fill,
+                              ),
+                              Positioned(
+                                top: 60,
+                                right: 0,
+                                child: IconButton(
+                                  icon: Icon(Icons.camera_alt),
+                                  onPressed: () {
+                                    _selectImage();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),   ],
+                      ),
+                    ],
                   ),
+                  // Stack(
+                  //   children: [
+                  //     _image == null ? Center(
+                  //         child: SizedBox(
+                  //           width: 100,
+                  //           height: 100,
+                  //           child: ClipRRect(
+                  //               borderRadius: BorderRadius.circular(100.0),
+                  //               child: Container(color: Colors.grey)
+                  //           ),
+                  //         )
+                  //     ) : Center(
+                  //         child: SizedBox(
+                  //             width: 100,
+                  //             height: 100,
+                  //             child: ClipRRect(
+                  //                 borderRadius: BorderRadius.circular(100.0),
+                  //                 child: Image.file(_image!, fit: BoxFit.fill)
+                  //             )
+                  //         )),
+                  //     _image == null ? (
+                  //         Center(
+                  //             child: SizedBox(
+                  //                 width: 100,
+                  //                 height: 100,
+                  //                 child: ClipRRect(
+                  //                     borderRadius: BorderRadius.circular(100.0),
+                  //                     child: newImage
+                  //                 )
+                  //             ))) : Container(),
+                  //
+                  //     Positioned(
+                  //       top: 60,
+                  //       right: 110,
+                  //       child: IconButton(
+                  //         icon: Icon(Icons.camera_alt),
+                  //         onPressed: () {
+                  //           _selectImage();
+                  //         },
+                  //       ),
+                  //     ),   ],
+                  // ),
                   SizedBox(
                     // height: 15,
                     height: size.height * 0.02,

@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dav2/screens/sparsh.dart';
+import 'package:dav2/screens/welfare.dart';
 import 'package:dav2/screens/welfaretab.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:photo_view/photo_view.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dav2/screens/Contacts.dart';
 import 'package:dav2/screens/Coursemateshome.dart';
@@ -43,11 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // late String _lastVisitTimeText;
   final DateFormat _dateFormat = DateFormat.yMd().add_jm();
   @override
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
-  String _text = "Press the button and start speaking";
-
-  @override
   void initState() {
     super.initState();
     Future.value().whenComplete(() => welcomePopUp(context));
@@ -55,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
     getPermission();
     _lastVisitTimeText = '';
     _getLastVisitTime();
-    _speech = stt.SpeechToText();
   }
 
   Future<void> _getLastVisitTime() async {
@@ -103,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
   var category = "";
   var name = "";
 
-
   Future<void> getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var serviceNumber = prefs.getString('ServiceNumber') ?? "";
@@ -130,11 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF394361),
@@ -147,46 +140,151 @@ class _HomeScreenState extends State<HomeScreen> {
           //     onPressed: _listen,
           //     // toggleRecording,
           //     icon: Icon(_isListening ? Icons.mic : Icons.mic_none)),
-
           Image(
               image: AssetImage(
-                "assets/images/newlogo.png",
-              )),
+            "assets/images/newlogo.png",
+          )),
         ],
       ),
       drawer: Maindrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
-                child: Container(
-                  color: Colors.grey.withOpacity(0.1),
-                ),
-              ),
-              height: size.height * 0.25,
-              width: size.width * 1.5,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    "assets/images/B2.jpg",
+            CarouselSlider(
+              items: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          body: SizedBox(
+                            height: size.height,
+                            child: PhotoView(
+                              imageProvider: AssetImage("assets/images/B2.jpg"),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/B2.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                  fit: BoxFit.fill,
                 ),
+
+                // Container(
+                //   margin: EdgeInsets.all(6.0),
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(8.0),
+                //     image: DecorationImage(
+                //       image: AssetImage(
+                //         "assets/images/B2.jpg",
+                //       ),
+                //       fit: BoxFit.cover,
+                //     ),
+                //   ),
+                // ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          body: SizedBox(
+                            height: size.height,
+                            child: PhotoView(
+                              imageProvider:
+                                  AssetImage("assets/images/hm-5.jpg"),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/hm-5.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          body: SizedBox(
+                            height: size.height,
+                            child: PhotoView(
+                              imageProvider:
+                                  AssetImage("assets/images/hm-6.jpg"),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/hm-6.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              options: CarouselOptions(
+                height: 190.0,
+                enlargeCenterPage: true,
+                autoPlay: true,
+                aspectRatio: 16 / 9,
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enableInfiniteScroll: true,
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                viewportFraction: 0.9,
               ),
             ),
+
+            // Container(
+            //   child: BackdropFilter(
+            //     filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
+            //     child: Container(
+            //       color: Colors.grey.withOpacity(0.1),
+            //     ),
+            //   ),
+            //   height: size.height * 0.25,
+            //   width: size.width * 1.5,
+            //   decoration: BoxDecoration(
+            //     image: DecorationImage(
+            //       image: AssetImage(
+            //         "assets/images/B2.jpg",
+            //       ),
+            //       fit: BoxFit.fill,
+            //     ),
+            //   ),
+            // ),
             Card(
               color: Color(0xFFf2fcff),
               margin: EdgeInsets.symmetric(
-                vertical: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 20,
-                horizontal: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 20,
+                vertical: MediaQuery.of(context).size.width / 20,
+                horizontal: MediaQuery.of(context).size.width / 20,
               ),
               child: Column(
                 children: [
@@ -194,10 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                            left: MediaQuery
-                                .of(context)
-                                .size
-                                .width / 30),
+                            left: MediaQuery.of(context).size.width / 30),
                         child: Text(
                           "Services",
                           style: TextStyle(
@@ -234,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                      AssetImage("assets/images/eppo.png"),
+                                          AssetImage("assets/images/eppo.png"),
                                       // AssetImage("assets/images/eppo-1.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -273,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                        // "assets/images/form16-1.png"),
+                                          // "assets/images/form16-1.png"),
                                           "assets/images/form16.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -312,8 +407,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                      // AssetImage("assets/images/por-1.png"),
-                                      AssetImage("assets/images/por.png"),
+                                          // AssetImage("assets/images/por-1.png"),
+                                          AssetImage("assets/images/por.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -352,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                        // "assets/images/iafpc.png"),
+                                          // "assets/images/iafpc.png"),
                                           "assets/images/resettlement.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -479,8 +574,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                      // AssetImage("assets/images/echs-1.png"),
-                                      AssetImage("assets/images/echs.png"),
+                                          // AssetImage("assets/images/echs-1.png"),
+                                          AssetImage("assets/images/echs.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -518,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                        // "assets/images/coursemates1.png"),
+                                          // "assets/images/coursemates1.png"),
                                           "assets/images/coursemates.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -557,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => WelfareTab()),
+                                  builder: (context) => Welfare()),
                             );
                           },
                           child: Card(
@@ -568,7 +663,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                        // "assets/images/coursemates1.png"),
+                                          // "assets/images/coursemates1.png"),
                                           "assets/images/welfare.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -626,14 +721,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Card(
               color: Color(0xFFf2fcff),
               margin: EdgeInsets.symmetric(
-                vertical: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 150,
-                horizontal: MediaQuery
-                    .of(context)
-                    .size
-                    .width / 20,
+                vertical: MediaQuery.of(context).size.width / 150,
+                horizontal: MediaQuery.of(context).size.width / 20,
               ),
               child: Column(
                 children: [
@@ -641,10 +730,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                            left: MediaQuery
-                                .of(context)
-                                .size
-                                .width / 30),
+                            left: MediaQuery.of(context).size.width / 30),
                         child: Text(
                           "Information",
                           style: TextStyle(
@@ -682,7 +768,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                        // "assets/images/update1.png"),
+                                          // "assets/images/update1.png"),
                                           "assets/images/update.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -722,7 +808,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image: AssetImage(
-                                        // "assets/images/notice.png"),
+                                          // "assets/images/notice.png"),
                                           "assets/images/noticeboard.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
@@ -761,7 +847,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                      AssetImage("assets/images/video.png"),
+                                          AssetImage("assets/images/video.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -800,7 +886,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
                                       image:
-                                      AssetImage("assets/images/faq.png"),
+                                          AssetImage("assets/images/faq.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -964,8 +1050,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Image(
-                                      image:
-                                      AssetImage("assets/images/iaf-afg.png"),
+                                      image: AssetImage(
+                                          "assets/images/iaf-afg.png"),
                                       height: size.height * 0.02,
                                       width: size.width * 0.15),
                                 ),
@@ -995,7 +1081,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-
                       // SizedBox(width: 30,),
                       SizedBox(
                         width: size.width * 0.04,
@@ -1189,7 +1274,8 @@ class _HomeScreenState extends State<HomeScreen> {
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Last visit: $_lastVisitTimeText',),
+                  'Last visit: $_lastVisitTimeText',
+                ),
                 // Text('Last Login: ${_getLastLoginTime()}'),
 
                 // Expanded(
@@ -1235,12 +1321,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       OtherLinks()),
                                             );
                                           },
-                                          child: Text("Yes")),
+                                          child: Text("Okay")),
                                       TextButton(
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
-                                          child: Text("No")),
+                                          child: Text("Cancel")),
                                     ],
                                   ),
                                 );
@@ -1259,7 +1345,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                    ],),),
+                    ],
+                  ),
+                ),
               ],
             ),
             // Row(
@@ -1285,14 +1373,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void welcomePopUp(context,) {
+  void welcomePopUp(
+    context,
+  ) {
     showDialog(
         context: context,
         builder: (_) {
           return AlertDialog(
             insetPadding: EdgeInsets.zero,
             contentPadding:
-            const EdgeInsets.symmetric(vertical: 24, horizontal: 14),
+                const EdgeInsets.symmetric(vertical: 24, horizontal: 14),
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
                 side: const BorderSide(
@@ -1300,22 +1390,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(18)),
             content: Builder(builder: (context) {
               return SizedBox(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.5,
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.15,
-                child:  Center(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text("Welcome",style:
-                        TextStyle( fontSize: 14,
+                      Text(
+                        "Jai Hind",
+                        style: TextStyle(
+                          fontSize: 14,
                           fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.bold,),),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       TextFormField(
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -1330,17 +1419,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: (){
+                        onPressed: () {
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
                             primary: const Color(0xFF0b0c5b),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(28))),
-                        child: Text("OK",style:
-                        TextStyle( fontSize: 14,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.bold,),),
+                        child: Text(
+                          "OK",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -1349,32 +1442,5 @@ class _HomeScreenState extends State<HomeScreen> {
             }),
           );
         });
-  //   void _listen() async {
-  //     if (!_isListening) {
-  //       bool available = await _speech.initialize(
-  //         onStatus: (val) => print('onStatus: $val'),
-  //         onError: (val) => print('onError: $val'),
-  //       );
-  //       if (available) {
-  //         setState(() => _isListening = true);
-  //         _speech.listen(
-  //           onResult: (val) =>
-  //               setState(() {
-  //                 _text = val.recognizedWords;
-  //               }),
-  //         );
-  //       } else {
-  //         setState(() => _isListening = false);
-  //         _speech.stop();
-  //       }
-  //     }
-  //   }
-  //   // void toggleRecording() {
-  //   //
-  //   //   SpeechApi.toggleRecording(
-  //   //     onResult: (String text) => setState(() => this.text=text),
-  //   //
-  //   //   );
-  //   // }
-  // }
-}}
+  }
+}

@@ -1,7 +1,5 @@
 import 'package:dav2/screens/hmscreen1.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -47,11 +45,11 @@ class _ChangeMpinState extends State<ChangeMpin> {
       // Fluttertoast.showToast(msg: "MPIN Changed Successfully");
       // Navigator.push(
       //     context, MaterialPageRoute(builder: (context) => HomeScreen()));
-
     } else {
       _showMyDialog(response.body);
     }
   }
+
   Future<void> _showMyDialog1(message) async {
     showDialog<String>(
       context: context,
@@ -61,14 +59,18 @@ class _ChangeMpinState extends State<ChangeMpin> {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomeScreen()),),
-                // Navigator.pop(context, 'OK'),
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            ),
+            // Navigator.pop(context, 'OK'),
             // child: const Text('OK'),
-        child: const Text('OK'),
-          ) ],
+            child: const Text('OK'),
+          )
+        ],
       ),
     );
   }
+
   Future<void> _showMyDialog(message) async {
     showDialog<String>(
       context: context,
@@ -84,6 +86,7 @@ class _ChangeMpinState extends State<ChangeMpin> {
       ),
     );
   }
+
   // bool isLoading = true;
   // bool isInternetConnection = true;
   // void checkInternetConnection()async{
@@ -161,8 +164,18 @@ class _ChangeMpinState extends State<ChangeMpin> {
             horizontal: MediaQuery.of(context).size.width / 40,
             vertical: MediaQuery.of(context).size.width / 120,
           ),
+
           child: Pinput(
             controller: newmpinController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter MPIN';
+              }
+              if (value.length < 4) {
+                return "Please enter 4 digit MPIN";
+              }
+              return null;
+            },
             length: 4,
             obscureText: true,
             obscuringCharacter: '●',
@@ -172,7 +185,21 @@ class _ChangeMpinState extends State<ChangeMpin> {
               });
             },
             showCursor: true,
+            // onCompleted: (pin) => print(pin),
           ),
+
+          // child: TextFormField(
+          //   controller: newmpinController,
+          //   // length: 4,
+          //   obscureText: true,
+          //   obscuringCharacter: '●',
+          //   onChanged: (value) {
+          //     setState(() {
+          //       _secureText = !_secureText;
+          //     });
+          //   },
+          //   showCursor: true,
+          // ),
         ),
         SizedBox(
           height: 30,

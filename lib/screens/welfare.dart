@@ -1,21 +1,20 @@
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
-class Ig6 extends StatefulWidget {
-  const Ig6({Key? key}) : super(key: key);
-
+class Welfare extends StatefulWidget {
+  const Welfare({Key? key}) : super(key: key);
   @override
-  State<Ig6> createState() => _Ig6State();
+  State<Welfare> createState() => _WelfareState();
 }
 
-class _Ig6State extends State<Ig6> {
+class _WelfareState extends State<Welfare> {
   late WebViewController controller;
+  var serviceNumber = "";
+  var cat = "";
+  var categoryController = TextEditingController();
+  var serviceNumberController = TextEditingController();
 
-  var pkController = TextEditingController();
-
-  var pk = "";
   @override
   void initState() {
     super.initState();
@@ -24,11 +23,12 @@ class _Ig6State extends State<Ig6> {
 
   Future<void> getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    pk = prefs.getString('PK') ?? "";
-    print(pk);
+    serviceNumber = prefs.getString('ServiceNumber') ?? "";
+    cat = prefs.getString('Category') ?? "";
+    print(serviceNumber);
+    print(cat);
     setState(() {});
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,15 +44,14 @@ class _Ig6State extends State<Ig6> {
               height: 60,
             ),
             Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('VAYU-SAMPARC'))
+                padding: const EdgeInsets.all(8.0), child: Text('VAYU-SAMPARC'))
           ],
         ),
       ),
       body: WebViewPlus(
         javascriptMode: JavascriptMode.unrestricted,
         initialUrl:
-        "https://iafpensioners.gov.in/ords/dav_portal/r/afgis/single-sign-on?P12_PK=$pk&CLEAR=6",
+        "https://iafpensioners.gov.in/ords/r/dav_portal/dte_av/certificate_request?P0_USER_SERVICE_NO=$serviceNumber&P0_USER_CATEGORY=$cat",
         onWebViewCreated: (controller) {
           this.controller = controller as WebViewController;
         },

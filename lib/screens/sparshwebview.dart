@@ -16,18 +16,23 @@ class _SparshWebviewState extends State<SparshWebview> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF394361),
-        title: Text(
-          "VAYU-SAMPARC",
-          style: TextStyle(fontSize: 20),
+        backgroundColor: Color(0xFFd3eaf2),
+        title: Row(
+          children: [
+            Image(
+              image: AssetImage(
+                "assets/images/dav-new-logo.png",
+              ),
+              fit: BoxFit.contain,
+              height: 60,
+            ),
+            Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('VAYU-SAMPARC'))
+          ],
         ),
-        // actions: [
-        //   IconButton(onPressed: (){},
-        //       // toggleRecording,
-        //       icon: Icon(Icons.mic)),
-        //   Image(image: AssetImage("assets/images/sparsh-logo.png"))],
       ),
-      drawer: Maindrawer(),
+      // drawer: Maindrawer(),
       body: WebView(
         javascriptMode: JavascriptMode.unrestricted,
         initialUrl: "https://sparsh.defencepension.gov.in/",

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:dav2/screens/pdf.dart';
-import 'package:dav2/screens/pdf1.dart';
 import 'package:dio/dio.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:flutter/material.dart';
@@ -53,22 +52,18 @@ class _Disability1State extends State<Disability1> {
 
   bool isLoading = true;
   bool isInternetConnection = true;
-  void checkInternetConnection()async{
+  void checkInternetConnection() async {
     bool internetConnection = await InternetConnectionChecker().hasConnection;
-    if(internetConnection == true)
-    {
+    if (internetConnection == true) {
       getData();
-    }
-    else
-    {
+    } else {
       setState(() {
         isInternetConnection = false;
       });
       _showMyDialog("Please check your internet connectivity");
     }
-
-
   }
+
   Future<void> _showMyDialog(message) async {
     showDialog<String>(
       context: context,
@@ -103,10 +98,10 @@ class _Disability1State extends State<Disability1> {
       try {
         await Dio().download(url, savePath,
             onReceiveProgress: (received, total) {
-              if (total != -1) {
-                print("${(received / total * 100).toStringAsFixed(0)}%");
-              }
-            });
+          if (total != -1) {
+            print("${(received / total * 100).toStringAsFixed(0)}%");
+          }
+        });
         Fluttertoast.showToast(
             msg: "File is saved to download folder.",
             toastLength: Toast.LENGTH_SHORT,
@@ -127,6 +122,7 @@ class _Disability1State extends State<Disability1> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -144,8 +140,7 @@ class _Disability1State extends State<Disability1> {
               height: 60,
             ),
             Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('VAYU-SAMPARC'))
+                padding: const EdgeInsets.all(8.0), child: Text('VAYU-SAMPARC'))
           ],
         ),
       ),
@@ -181,8 +176,8 @@ class _Disability1State extends State<Disability1> {
                       primary: false,
                       itemCount: data.length,
                       separatorBuilder: (context, position) => SizedBox(
-                        height: 0,
-                      ),
+                            height: 0,
+                          ),
                       shrinkWrap: true,
                       itemBuilder: (context, position) {
                         return Container(
@@ -201,34 +196,28 @@ class _Disability1State extends State<Disability1> {
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.all(
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            40),
-                                    child: Text(data[position].hsd_sr_no.toString()),
+                                        MediaQuery.of(context).size.width / 40),
+                                    child: Text(
+                                        data[position].hsd_sr_no.toString()),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            40),
-                                    child: Text(data[position].hsd_detail.toString()),
+                                        MediaQuery.of(context).size.width / 40),
+                                    child: Text(
+                                        data[position].hsd_detail.toString()),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            70),
+                                        MediaQuery.of(context).size.width / 70),
                                     child: GestureDetector(
                                       onTap: () {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  pdf(data[position]
-                                                      .hsd_pdf_link.toString()),
+                                              builder: (context) => pdf(
+                                                  data[position]
+                                                      .hsd_pdf_link
+                                                      .toString()),
                                             ));
                                       },
                                       child: Icon(
@@ -239,14 +228,12 @@ class _Disability1State extends State<Disability1> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(
-                                        MediaQuery.of(context)
-                                            .size
-                                            .width /
-                                            50),
+                                        MediaQuery.of(context).size.width / 50),
                                     child: GestureDetector(
                                       onTap: () {
                                         saveFile(data[position]
-                                            .hsd_pdf_link.toString());
+                                            .hsd_pdf_link
+                                            .toString());
                                       },
                                       child: Icon(
                                         Icons.download,

@@ -23,11 +23,21 @@ class _OtherLinksState extends State<OtherLinks> {
     return Scaffold(
       backgroundColor: Color(0xFFf2fcff),
       appBar: AppBar(
-        backgroundColor: Color(0xFF394361),
-        title: Text("VAYU-SAMPARC"
-            // "SERVING THOSE WHO SERVED US",
-            // style: TextStyle(fontSize: 15),
+        backgroundColor: Color(0xFFd3eaf2),
+        title: Row(
+          children: [
+            Image(
+              image: AssetImage(
+                "assets/images/dav-new-logo.png",
+              ),
+              fit: BoxFit.contain,
+              height: 60,
             ),
+            Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('VAYU-SAMPARC'))
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(

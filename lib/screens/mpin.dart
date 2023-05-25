@@ -5,7 +5,6 @@ import 'package:dav2/screens/profile.dart';
 import 'package:dav2/screens/vet_register.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../Models/login_model.dart';
@@ -119,29 +118,6 @@ class _MpinState extends State<Mpin> {
 
   @override
   Widget build(BuildContext context) {
-    final defaultPinTheme = PinTheme(
-      width: 56,
-      height: 56,
-      textStyle: TextStyle(
-          fontSize: 20,
-          color: Color.fromRGBO(30, 60, 87, 1),
-          fontWeight: FontWeight.w600),
-      decoration: BoxDecoration(
-        border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
-        borderRadius: BorderRadius.circular(20),
-      ),
-    );
-
-    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: Color.fromRGBO(114, 178, 238, 1)),
-      borderRadius: BorderRadius.circular(8),
-    );
-
-    final submittedPinTheme = defaultPinTheme.copyWith(
-      decoration: defaultPinTheme.decoration?.copyWith(
-        color: Color.fromRGBO(234, 239, 243, 1),
-      ),
-    );
 
     Size size = MediaQuery.of(context).size;
     final maxLines;
@@ -194,30 +170,61 @@ class _MpinState extends State<Mpin> {
                   horizontal: MediaQuery.of(context).size.width / 40,
                   vertical: MediaQuery.of(context).size.width / 70,
                 ),
-
-                child: Pinput(
+                //
+                // child: Pinput(
+                //   controller: passwordController,
+                //   validator: (value) {
+                //     if (value == null || value.isEmpty) {
+                //       return 'Please enter MPIN';
+                //     }
+                //     if (value.length < 4) {
+                //       return "Please enter 4 digit MPIN";
+                //     }
+                //     return null;
+                //   },
+                //   length: 4,
+                //   obscureText: true,
+                //   obscuringCharacter: '●',
+                //   onChanged: (value) {
+                //     setState(() {
+                //       _secureText = !_secureText;
+                //     });
+                //   },
+                //   showCursor: true,
+                //   // onCompleted: (pin) => print(pin),
+                // ),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
                   controller: passwordController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  obscureText: _secureText,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    hintText: "MPIN",
+                    filled: true,
+                    fillColor: Colors.white,
+                    suffixIcon: IconButton(
+                      icon: Icon(_secureText
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: () {
+
+                        setState(() {
+                          _secureText = !_secureText;
+                        });
+                      },
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter MPIN';
+                      return 'Please enter password';
                     }
                     if (value.length < 4) {
-                      return "Please enter 4 digit MPIN";
+                      return "Please enter 4 numbers";
                     }
                     return null;
                   },
-                  length: 4,
-                  obscureText: true,
-                  obscuringCharacter: '●',
-                  onChanged: (value) {
-                    setState(() {
-                      _secureText = !_secureText;
-                    });
-                  },
-                  showCursor: true,
-                  // onCompleted: (pin) => print(pin),
                 ),
-
               ),
 
                 Container(

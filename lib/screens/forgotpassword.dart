@@ -417,7 +417,7 @@ class _ForgotpasswordState extends State<Forgotpassword> {
     print(response.body);
     if(response.body.trim() == "OK") {
       prefs.setString('MPIN', newmpinController.text.toString());
-      Fluttertoast.showToast(msg: "Password Changed Successfully");
+      Fluttertoast.showToast(msg: "Mpin Changed Successfully");
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
 
     }else{
@@ -708,20 +708,28 @@ print("$baseURL/FORGETPINNEW//FORGETPINNEW/${serviceNumberController.text}/${_da
             MediaQuery.of(context).size.width /
                 120,
           ),
-          child: Pinput(
-            controller: newmpinController,
-            length: 4,
-            obscureText: true,
-            obscuringCharacter: '●',
-            onChanged: (value) {
-              setState(() {
-                _secureText = !_secureText;
-              }
-              );
-            },
-
-            showCursor: true,
-          ),
+            child: Pinput(
+              controller: newmpinController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter MPIN';
+                }
+                if (value.length < 4) {
+                  return "Please enter 4 digit MPIN";
+                }
+                return null;
+              },
+              length: 4,
+              obscureText: true,
+              obscuringCharacter: '●',
+              onChanged: (value) {
+                setState(() {
+                  _secureText = !_secureText;
+                });
+              },
+              showCursor: true,
+              // onCompleted: (pin) => print(pin),
+            ),
         ),
 
           // Padding(

@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import '../Models/login_model.dart';
 import 'constant.dart';
 import 'hmscreen1.dart';
-import 'package:intl/intl.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -39,12 +38,17 @@ class _LoginState extends State<Login> {
   var pkController = TextEditingController();
   var pk = "";
 
-
   @override
   void initState() {
     super.initState();
     getData();
     // _initSharedPreferences();
+  }
+
+  @override
+  void dispose() {
+    passwordController.dispose(); // Dispose of the controller properly
+    super.dispose();
   }
   // Future<void> _initSharedPreferences() async {
   //   prefs = await SharedPreferences.getInstance();
@@ -141,7 +145,7 @@ class _LoginState extends State<Login> {
     });
   }
 
-  Future<void> _showMyDialog(message) async {
+  Future<void> _showMyDialog(String message) async {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -149,7 +153,12 @@ class _LoginState extends State<Login> {
         content: Text(message),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context, 'OK'),
+            onPressed: () {
+              Navigator.pop(context, 'OK');
+              setState(() {
+                isLoading = false;
+              });
+            },
             child: const Text('OK'),
           ),
         ],
@@ -159,29 +168,6 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    final defaultPinTheme = PinTheme(
-      width: 56,
-      height: 56,
-      textStyle: TextStyle(
-          fontSize: 20,
-          color: Color.fromRGBO(30, 60, 87, 1),
-          fontWeight: FontWeight.w600),
-      decoration: BoxDecoration(
-        border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
-        borderRadius: BorderRadius.circular(20),
-      ),
-    );
-
-    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: Color.fromRGBO(114, 178, 238, 1)),
-      borderRadius: BorderRadius.circular(8),
-    );
-
-    final submittedPinTheme = defaultPinTheme.copyWith(
-      decoration: defaultPinTheme.decoration?.copyWith(
-        color: Color.fromRGBO(234, 239, 243, 1),
-      ),
-    );
 
     Size size = MediaQuery.of(context).size;
     final maxLines;
@@ -412,10 +398,13 @@ class _LoginState extends State<Login> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter Service Number';
-                      } else {
+                      } else if (value.length > 7) {
+                        return 'Service number should not exceed 7';
+                      }else {
                         return null;
                       }
                     },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: "Service No",
@@ -446,7 +435,6 @@ class _LoginState extends State<Login> {
                   horizontal: MediaQuery.of(context).size.width / 40,
                   vertical: MediaQuery.of(context).size.width / 70,
                 ),
-
                 child: Pinput(
                   controller: passwordController,
                   validator: (value) {
@@ -469,6 +457,7 @@ class _LoginState extends State<Login> {
                   showCursor: true,
                   // onCompleted: (pin) => print(pin),
                 ),
+
                 // child: TextFormField(
                 //   keyboardType: TextInputType.number,
                 //   controller: passwordController,

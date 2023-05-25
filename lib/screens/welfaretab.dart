@@ -1,9 +1,9 @@
-
 import 'package:dav2/screens/diploma_certificate.dart';
+import 'package:dav2/screens/issue_certificate.dart';
 import 'package:flutter/material.dart';
+
 class WelfareTab extends StatefulWidget {
   const WelfareTab({Key? key}) : super(key: key);
-
   @override
   State<WelfareTab> createState() => _WelfareTabState();
 }
@@ -11,9 +11,7 @@ class WelfareTab extends StatefulWidget {
 class _WelfareTabState extends State<WelfareTab> {
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Color(0xFFf2fcff),
       appBar: AppBar(
@@ -28,15 +26,16 @@ class _WelfareTabState extends State<WelfareTab> {
               height: 60,
             ),
             Container(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('VAYU-SAMPARC'))
+                padding: const EdgeInsets.all(8.0), child: Text('VAYU-SAMPARC'))
           ],
         ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 50,),
+            SizedBox(
+              height: 50,
+            ),
             Column(
               children: [
                 Row(
@@ -48,27 +47,17 @@ class _WelfareTabState extends State<WelfareTab> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Diploma()),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => Diploma()),
+                          // );
                         },
                         child: Card(
                           color: Color(0xFFd3eaf2),
                           child: Column(
                             children: [
-                              // Padding(
-                              //   padding: const EdgeInsets.only(top: 8.0),
-                              //   child: Image(
-                              //       image:
-                              //       AssetImage("assets/images/eppo.png"),
-                              //       // AssetImage("assets/images/eppo-1.png"),
-                              //       height: size.height * 0.02,
-                              //       width: size.width * 0.15),
-                              // ),
                               Container(
                                   height: 50,
-
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 20.0),
                                     child: Text(
@@ -93,25 +82,15 @@ class _WelfareTabState extends State<WelfareTab> {
                         onTap: () {
                           // Navigator.push(
                           //   context,
-                          //   MaterialPageRoute(builder: (context) => Form16()),
+                          //   MaterialPageRoute(builder: (context) => Issue()),
                           // );
                         },
                         child: Card(
                           color: Color(0xFFd3eaf2),
                           child: Column(
                             children: [
-                              // Padding(
-                              //   padding: const EdgeInsets.only(top: 8.0),
-                              //   child: Image(
-                              //       image: AssetImage(
-                              //         // "assets/images/form16-1.png"),
-                              //           "assets/images/form16.png"),
-                              //       height: size.height * 0.02,
-                              //       width: size.width * 0.15),
-                              // ),
                               Container(
                                   height: 50,
-
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 20.0),
                                     child: Text(
@@ -131,10 +110,8 @@ class _WelfareTabState extends State<WelfareTab> {
                     SizedBox(
                       width: size.width * 0.08,
                     ),
-
                   ],
                 ),
-
               ],
             ),
           ],

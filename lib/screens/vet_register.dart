@@ -22,11 +22,16 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-
   bool _secureText = true;
   bool isLoading = false;
 
   TextEditingController cat = TextEditingController();
+
+//   bool validateMobile(String mobile) {
+//     final RegExp mobileRegex = RegExp(r'^[6-9]\d{9}$');
+//     return mobileRegex.hasMatch(mobile);
+//   }
+//
   TextEditingController serviceNumber = TextEditingController();
   TextEditingController aadharNumber = TextEditingController();
   TextEditingController mobileController = TextEditingController();
@@ -65,8 +70,8 @@ class _RegisterState extends State<Register> {
     } else {
       cat = "A";
     }
-    print("${baseURL}/registeration//registeration/${serviceNumber.text}/${cat}/${_date.text}/${_date1.text}/${_date2.text}/${password.text}/${panNumber.text}/${mobileController.text}/${aadharNumber.text}/${email.text}"
-    );
+    print(
+        "${baseURL}/registeration//registeration/${serviceNumber.text}/${cat}/${_date.text}/${_date1.text}/${_date2.text}/${password.text}/${panNumber.text}/${mobileController.text}/${aadharNumber.text}/${email.text}");
     final response = await http.get(Uri.parse(
         "${baseURL}/registeration//registeration/${serviceNumber.text}/${cat}/${_date.text}/${_date1.text}/${_date2.text}/${password.text}/${panNumber.text}/${mobileController.text}/${aadharNumber.text}/${email.text}"));
     var responseBody = jsonDecode(response.body);
@@ -106,7 +111,7 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> insetData() async {
-    var cat = "O" ;
+    var cat = "O";
     if (dropdownvalue == "Officer") {
       cat = "O";
     } else {
@@ -251,10 +256,13 @@ class _RegisterState extends State<Register> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter Service Number';
+                  } else if (value.length > 7) {
+                    return 'Service number should not exceed 7';
                   } else {
                     return null;
                   }
                 },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Service No",
@@ -321,6 +329,33 @@ class _RegisterState extends State<Register> {
                   flex: 9,
                   child: Column(
                     children: [
+                      // Padding(
+                      //   padding: EdgeInsets.symmetric(
+                      //     horizontal: MediaQuery.of(context).size.width / 40,
+                      //     vertical: MediaQuery.of(context).size.width / 120,
+                      //   ),
+                      //   child: TextFormField(
+                      //       // controller: mobileController,
+                      //       keyboardType: TextInputType.phone,
+                      //           onChanged: (value) {
+                      //             phone = value;
+                      //           },
+                      //       autovalidateMode: AutovalidateMode.onUserInteraction,
+                      //       decoration: const InputDecoration(
+                      //         border: OutlineInputBorder(),
+                      //         hintText: "Mobile Number",
+                      //         filled: true,
+                      //         fillColor: Colors.white,
+                      //       ),
+                      //       validator: (value) {
+                      //         if (value!.isEmpty ||
+                      //             !RegExp(r'^[6-9]\d{9}$').hasMatch(value)) {
+                      //           return "Enter Mobile number";
+                      //         } else {
+                      //           return null;
+                      //         }
+                      //       }),
+                      // ),
                       Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: MediaQuery.of(context).size.width / 40,
@@ -331,6 +366,7 @@ class _RegisterState extends State<Register> {
                           onChanged: (value) {
                             phone = value;
                           },
+
                           // controller: mobileController,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(),
@@ -339,6 +375,32 @@ class _RegisterState extends State<Register> {
                               hintText: "Mobile Number"),
                         ),
                       ),
+                      // Padding(
+                      //   padding: EdgeInsets.symmetric(
+                      //     horizontal: MediaQuery.of(context).size.width / 40,
+                      //     vertical: MediaQuery.of(context).size.width / 120,
+                      //   ),
+                      //   child: TextFormField(
+                      //     keyboardType: TextInputType.phone,
+                      //     onChanged: (value) {
+                      //       phone = value;
+                      //     },
+                      //     validator: (value) {
+                      //       if (value!.isEmpty ||
+                      //           !RegExp(r'^[6-9]\d{9}$').hasMatch(value)) {
+                      //         return "Enter Mobile number";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //     decoration: InputDecoration(
+                      //       border: OutlineInputBorder(),
+                      //       filled: true,
+                      //       fillColor: Colors.white,
+                      //       hintText: "Mobile Number",
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
